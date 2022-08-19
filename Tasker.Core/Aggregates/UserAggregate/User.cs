@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Tasker.Core.Abstractions;
+using Tasker.Core.Constants;
 using Tasker.Core.Helpers;
 
 namespace Tasker.Core.Aggregates.UserAggregate
@@ -13,6 +14,8 @@ namespace Tasker.Core.Aggregates.UserAggregate
         public string LastName { get; private set; }
 
         public string EmailAddress { get; private set; }
+
+        public UserStatus Status { get; set; }
 
         public User
         (
@@ -29,6 +32,7 @@ namespace Tasker.Core.Aggregates.UserAggregate
             Guard.AgainstEmptyOrWhiteSpace(firstname);
             FirstName = firstname;
             LastName = lastname;
+            Status = UserStatus.Active;
         }
 
         public User

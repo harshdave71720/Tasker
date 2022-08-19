@@ -1,0 +1,74 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using Tasker.Core.Abstractions;
+using Tasker.Core.Constants;
+using Tasker.Core.Helpers;
+
+namespace Tasker.Core.Aggregates.TaskAggregate
+{
+    public class Task : Entity<int>
+    {
+        public string Name { get; private set; }
+
+        public List<TaskWorker> PossibleWorkers { get; private set; }
+
+        public TaskWorker CurrentWorker { get; private set; }
+
+        private List<TaskHistoryItem> _history;
+
+        public IReadOnlyList<TaskHistoryItem> History 
+        { 
+            get 
+            { 
+                return _history.AsReadOnly();
+            } 
+        }
+
+        public Task(int id, string name, List<TaskWorker> possibleWorkers, TaskWorker currentWorker, List<TaskHistoryItem> history) 
+            : base(id)
+        {
+            Guard.AgainstEmptyOrWhiteSpace(name);
+            Name = name;
+            Guard.AgainstNull(possibleWorkers);
+            Guard.AgainstEmpty(possibleWorkers);
+            PossibleWorkers = possibleWorkers;
+            CurrentWorker = currentWorker;
+            if (history == null)
+                _history = new List<TaskHistoryItem>();
+        }
+
+        public Task(string name, List<TaskWorker> possibleWorkers, TaskWorker currentWorker, List<TaskHistoryItem> history)
+            : this(default(int), name, possibleWorkers, currentWorker, history)
+        {
+        }
+
+        protected override void IdentityGuards(int id)
+        {
+            Guard.AgainstNegative(id);
+        }
+
+        public void MarkDone()
+        {
+            if (CurrentWorker == null)
+                throw new InvalidOperationException();
+
+            this.AddHistory(TaskCompletionStatus.Done);
+            CurrentWorker = null;
+        }
+
+        public void Skip()
+        {
+            if (CurrentWorker == null)
+                throw new InvalidOperationException();
+
+            this.AddHistory(TaskCompletionStatus.Skipped);
+            CurrentWorker = null;
+        }
+
+        private void AddHistory(TaskCompletionStatus taskCompletionStatus)
+        {
+            this._history.Add(new TaskHistoryItem(DateTime.Now, CurrentWorker.Id, taskCompletionStatus));
+        }
+    }
+}

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Tasker.Core.Aggregates.UserAggregate;
+using Tasker.Core.Constants;
 
 namespace Tasker.Tests.Core
 {
@@ -55,6 +56,14 @@ namespace Tasker.Tests.Core
             Assert.Throws<ArgumentException>(() => { new User(-1, "test@org.com", "first", "last"); });
             Assert.Throws<ArgumentException>(() => { new User(-100, "test@org.com", "first", "last"); });
             Assert.Throws<ArgumentException>(() => { new User(-67, "test@org.com", "first", "last"); });
+        }
+
+        [Test]
+        public void Contstructor_DefaultsStatusToActive()
+        {
+            var sut = new User(1, "test@org.com", "first", "last");
+
+            Assert.AreEqual(UserStatus.Active, sut.Status);
         }
 
         [Test]

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Tasker.Core.Helpers
@@ -38,6 +38,18 @@ namespace Tasker.Core.Helpers
         public static void AgainstNegative(double number)
         {
             if (number < 0)
+                throw new ArgumentException();
+        }
+
+        public static void AgainstDefault(double number)
+        {
+            if (number == default(double))
+                throw new ArgumentException();
+        }
+
+        public static void AgainstEmpty<T>(IEnumerable<T> collection)
+        {
+            if (collection.Count() == 0)
                 throw new ArgumentException();
         }
 
