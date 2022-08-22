@@ -67,6 +67,14 @@ namespace Tasker.Tests.Core
         }
 
         [Test]
+        public void Contstructor_DefaultsWorkerStatusToAvailable()
+        {
+            var sut = new User(1, "test@org.com", "first", "last");
+
+            Assert.AreEqual(WorkerStatus.Available, sut.WorkerStatus);
+        }
+
+        [Test]
         public void Id_ShouldOnlyAllowPositiveToBeSetIfCurrentIsDefault()
         {
             var sut = new User("test@org.com", "first", "last");

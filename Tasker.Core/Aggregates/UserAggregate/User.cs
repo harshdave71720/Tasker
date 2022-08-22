@@ -17,31 +17,34 @@ namespace Tasker.Core.Aggregates.UserAggregate
 
         public UserStatus Status { get; set; }
 
+        public WorkerStatus WorkerStatus { get; set; }
+
         public User
         (
             int id,
             string email,
             string firstname,
-            string lastname = null
+            string lastname = null,
+            WorkerStatus workerStatus = WorkerStatus.Available
         )
         : base(id)
         {
             Guard.AgainstInvalidEmail(email);
             EmailAddress = email;
-
             Guard.AgainstEmptyOrWhiteSpace(firstname);
             FirstName = firstname;
             LastName = lastname;
-            Status = UserStatus.Active;
+            WorkerStatus = workerStatus;
         }
 
         public User
         (
             string email,
             string firstname,
-            string lastname = null
+            string lastname = null,
+            WorkerStatus workerStatus = WorkerStatus.Available
         )
-        : this(default(int), email, firstname, lastname) { }
+        : this(default(int), email, firstname, lastname, workerStatus) { }
 
         protected override void IdentityGuards(int id)
         {
