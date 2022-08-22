@@ -144,5 +144,57 @@ namespace Tasker.Tests.Core.TaskAggregate
             Assert.True(task1.Equals(task2));
             Assert.False(task1.Equals(task3));
         }
+
+        [Test]
+        public void AddWorker_ShouldAddNewWorker()
+        {
+            var workerToAdd = new TaskWorker(100, UserStatus.Active);
+            var sut = new Task("TestTask", new List<TaskWorker> { new TaskWorker(12, UserStatus.Active) }, null, null);
+
+            sut.AddWorker(workerToAdd);
+
+            Assert.IsNotNull(sut.PossibleWorkers.Single(w => w.Equals(workerToAdd)));
+        }
+
+        [Test]
+        public void AddWorker_ShouldDoNothingIfWorkerAlreadyAdded()
+        {
+            var workerToAdd = new TaskWorker(100, UserStatus.Active);
+            var sut = new Task("TestTask", new List<TaskWorker> { new TaskWorker(workerToAdd.Id, UserStatus.Active) }, null, null);
+
+            sut.AddWorker(workerToAdd);
+
+            Assert.IsNotNull(sut.PossibleWorkers.Single(w => w.Equals(workerToAdd)));
+        }
+
+        [Test]
+        public void RemoveWorker_ShouldRemoveWorker()
+        {
+            var workerToRemove = new TaskWorker(10, UserStatus.Active);
+            var sut = new Task("TestTask", new List<TaskWorker> { new TaskWorker(workerToRemove.Id, UserStatus.Active), SampleTaskWorker }, null, null);
+
+            sut.RemoveWorker(workerToRemove.Id);
+
+            Assert.False(sut.PossibleWorkers.Any(w => w.Id == workerToRemove.Id));
+        }
+
+        [Test]
+        public void RemoveWorker_ShouldDoNothingIfWorkerNotAssigned()
+        {
+            var workerToRemove = new TaskWorker(10, UserStatus.Active);
+            var sut = new Task("TestTask", new List<TaskWorker> { SampleTaskWorker }, null, null);
+
+            sut.RemoveWorker(workerToRemove.Id);
+            Assert.AreEqual(1, sut.PossibleWorkers.Count());
+        }
+
+        [Test]
+        public void RemoveWorker_ShouldThrowExceptionIfCurrentWorkerIsPassed()
+        {
+            var workerToRemove = new TaskWorker(10, UserStatus.Active);
+            var sut = new Task("TestTask", new List<TaskWorker> { SampleTaskWorker, new TaskWorker(workerToRemove.Id, UserStatus.Inactive) }, workerToRemove, null);
+
+            Assert.Throws<InvalidOperationException>(() => sut.RemoveWorker(workerToRemove.Id));
+        }
     }
 }
