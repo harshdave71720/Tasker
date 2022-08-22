@@ -21,6 +21,8 @@ namespace Tasker.Core.Aggregates.TaskAggregate
 
         public TaskWorker CurrentWorker { get; private set; }
 
+        public TaskAssignmentStrategy AssignmentStrategy { get; set; }
+
         private List<TaskHistoryItem> _history;
 
         public IReadOnlyList<TaskHistoryItem> History 
@@ -31,7 +33,15 @@ namespace Tasker.Core.Aggregates.TaskAggregate
             } 
         }
 
-        public Task(int id, string name, List<TaskWorker> possibleWorkers, TaskWorker currentWorker, List<TaskHistoryItem> history) 
+        public Task
+            (
+                int id, 
+                string name, 
+                List<TaskWorker> possibleWorkers, 
+                TaskWorker currentWorker = null, 
+                TaskAssignmentStrategy taskAssignmetStrategy = TaskAssignmentStrategy.None,
+                List<TaskHistoryItem> history = null
+            ) 
             : base(id)
         {
             Guard.AgainstEmptyOrWhiteSpace(name);
@@ -40,12 +50,20 @@ namespace Tasker.Core.Aggregates.TaskAggregate
             Guard.AgainstEmpty(possibleWorkers);
             _possibleWorkers = possibleWorkers;
             CurrentWorker = currentWorker;
+            AssignmentStrategy = taskAssignmetStrategy;
             if (history == null)
                 _history = new List<TaskHistoryItem>();
         }
 
-        public Task(string name, List<TaskWorker> possibleWorkers, TaskWorker currentWorker, List<TaskHistoryItem> history)
-            : this(default(int), name, possibleWorkers, currentWorker, history)
+        public Task
+            (
+            string name, 
+            List<TaskWorker> possibleWorkers, 
+            TaskWorker currentWorker = null,
+            TaskAssignmentStrategy taskAssignmetStrategy = TaskAssignmentStrategy.None,
+            List<TaskHistoryItem> history = null
+            )
+            : this(default(int), name, possibleWorkers, currentWorker, taskAssignmetStrategy, history)
         {
         }
 
