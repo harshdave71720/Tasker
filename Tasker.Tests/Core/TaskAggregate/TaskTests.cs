@@ -11,7 +11,7 @@ namespace Tasker.Tests.Core.TaskAggregate
     [TestFixture]
     internal class TaskTests
     {
-        private TaskWorker SampleTaskWorker => new TaskWorker(1, UserStatus.Active);
+        private TaskWorker SampleTaskWorker => new TaskWorker(1, "Jane", "Doe", UserStatus.Active);
         
         [Test]
         public void Constructor_ShouldThrowExceptionIfNameIsInvalid()
@@ -148,8 +148,8 @@ namespace Tasker.Tests.Core.TaskAggregate
         [Test]
         public void AddWorker_ShouldAddNewWorker()
         {
-            var workerToAdd = new TaskWorker(100, UserStatus.Active);
-            var sut = new Task("TestTask", new List<TaskWorker> { new TaskWorker(12, UserStatus.Active) }, null);
+            var workerToAdd = new TaskWorker(100, "Jane", "Doe", UserStatus.Active);
+            var sut = new Task("TestTask", new List<TaskWorker> { new TaskWorker(12, "Jane", "Doe", UserStatus.Active) }, null);
 
             sut.AddWorker(workerToAdd);
 
@@ -159,8 +159,8 @@ namespace Tasker.Tests.Core.TaskAggregate
         [Test]
         public void AddWorker_ShouldDoNothingIfWorkerAlreadyAdded()
         {
-            var workerToAdd = new TaskWorker(100, UserStatus.Active);
-            var sut = new Task("TestTask", new List<TaskWorker> { new TaskWorker(workerToAdd.Id, UserStatus.Active) });
+            var workerToAdd = new TaskWorker(100, "Jane", "Doe", UserStatus.Active);
+            var sut = new Task("TestTask", new List<TaskWorker> { new TaskWorker(workerToAdd.Id, "Jane", "Doe", UserStatus.Active) });
 
             sut.AddWorker(workerToAdd);
 
@@ -170,8 +170,8 @@ namespace Tasker.Tests.Core.TaskAggregate
         [Test]
         public void RemoveWorker_ShouldRemoveWorker()
         {
-            var workerToRemove = new TaskWorker(10, UserStatus.Active);
-            var sut = new Task("TestTask", new List<TaskWorker> { new TaskWorker(workerToRemove.Id, UserStatus.Active), SampleTaskWorker });
+            var workerToRemove = new TaskWorker(10, "Jane", "Doe", UserStatus.Active);
+            var sut = new Task("TestTask", new List<TaskWorker> { new TaskWorker(workerToRemove.Id, "Jane", "Doe", UserStatus.Active), SampleTaskWorker });
 
             sut.RemoveWorker(workerToRemove.Id);
 
@@ -181,7 +181,7 @@ namespace Tasker.Tests.Core.TaskAggregate
         [Test]
         public void RemoveWorker_ShouldDoNothingIfWorkerNotAssigned()
         {
-            var workerToRemove = new TaskWorker(10, UserStatus.Active);
+            var workerToRemove = new TaskWorker(10, "Jane", "Doe", UserStatus.Active);
             var sut = new Task("TestTask", new List<TaskWorker> { SampleTaskWorker });
 
             sut.RemoveWorker(workerToRemove.Id);
@@ -191,8 +191,8 @@ namespace Tasker.Tests.Core.TaskAggregate
         [Test]
         public void RemoveWorker_ShouldThrowExceptionIfCurrentWorkerIsPassed()
         {
-            var workerToRemove = new TaskWorker(10, UserStatus.Active);
-            var sut = new Task("TestTask", new List<TaskWorker> { SampleTaskWorker, new TaskWorker(workerToRemove.Id, UserStatus.Inactive) }, workerToRemove);
+            var workerToRemove = new TaskWorker(10, "Jane", "Doe", UserStatus.Active);
+            var sut = new Task("TestTask", new List<TaskWorker> { SampleTaskWorker, new TaskWorker(workerToRemove.Id, "Jane", "Doe", UserStatus.Inactive) }, workerToRemove);
 
             Assert.Throws<InvalidOperationException>(() => sut.RemoveWorker(workerToRemove.Id));
         }

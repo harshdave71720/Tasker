@@ -13,7 +13,7 @@ namespace Tasker.Tests.Core.TaskAggregate
         [Test]
         public void Constructor_ShouldThrowExceptionWhenIdIsNegative()
         {
-            Assert.Throws<ArgumentException>(() => { new TaskWorker(-1, UserStatus.Active); });
+            Assert.Throws<ArgumentException>(() => { new TaskWorker(-1, "Jane", "Doe", UserStatus.Active); });
         }
 
         [TestCase(1)]
@@ -22,23 +22,23 @@ namespace Tasker.Tests.Core.TaskAggregate
         public void GetHashCode_ReturnsCorrectValue(int id)
         {
             var expected = typeof(TaskWorker).GetHashCode() + id;
-            Assert.AreEqual(expected, new TaskWorker(id, UserStatus.Active).GetHashCode());
+            Assert.AreEqual(expected, new TaskWorker(id, "Jane", "Doe", UserStatus.Active).GetHashCode());
         }
 
         [Test]
         public void Equals_ShouldReturnFalseWhenIdsAreDefaultOrNotMatching()
         {
-            Assert.False(new TaskWorker(0, UserStatus.Active).Equals(new TaskWorker(0, UserStatus.Active)));
-            Assert.False(new TaskWorker(1, UserStatus.Active).Equals(new TaskWorker(0, UserStatus.Active)));
-            Assert.False(new TaskWorker(0, UserStatus.Active).Equals(new TaskWorker(1, UserStatus.Active)));
-            Assert.False(new TaskWorker(12, UserStatus.Active).Equals(new TaskWorker(21, UserStatus.Active)));
+            Assert.False(new TaskWorker(0, "Jane", "Doe", UserStatus.Active).Equals(new TaskWorker(0, "Jane", "Doe", UserStatus.Active)));
+            Assert.False(new TaskWorker(1, "Jane", "Doe", UserStatus.Active).Equals(new TaskWorker(0, "Jane", "Doe", UserStatus.Active)));
+            Assert.False(new TaskWorker(0, "Jane", "Doe", UserStatus.Active).Equals(new TaskWorker(1, "Jane", "Doe", UserStatus.Active)));
+            Assert.False(new TaskWorker(12, "Jane", "Doe", UserStatus.Active).Equals(new TaskWorker(21, "Jane", "Doe", UserStatus.Active)));
         }
 
         [Test]
         public void Equals_ShouldReturnTrueWhenIdsAreSame()
         {
-            Assert.True(new TaskWorker(1, UserStatus.Active).Equals(new TaskWorker(1, UserStatus.Active)));
-            Assert.True(new TaskWorker(12, UserStatus.Active).Equals(new TaskWorker(12, UserStatus.Active)));
+            Assert.True(new TaskWorker(1, "Jane", "Doe", UserStatus.Active).Equals(new TaskWorker(1, "Jane", "Doe", UserStatus.Active)));
+            Assert.True(new TaskWorker(12, "Jane", "Doe", UserStatus.Active).Equals(new TaskWorker(12, "Jane", "Doe", UserStatus.Active)));
         }
     }
 }
