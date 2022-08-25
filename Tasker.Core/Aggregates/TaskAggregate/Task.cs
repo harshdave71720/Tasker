@@ -21,7 +21,7 @@ namespace Tasker.Core.Aggregates.TaskAggregate
 
         public TaskWorker CurrentWorker { get; private set; }
 
-        public TaskAssignmentStrategy AssignmentStrategy { get; set; }
+        public WorkerOrderingScheme WorkerOrderingScheme { get; private set; }
 
         private List<TaskHistoryItem> _history;
 
@@ -39,7 +39,7 @@ namespace Tasker.Core.Aggregates.TaskAggregate
                 string name, 
                 List<TaskWorker> possibleWorkers, 
                 TaskWorker currentWorker = null, 
-                TaskAssignmentStrategy taskAssignmetStrategy = TaskAssignmentStrategy.None,
+                WorkerOrderingScheme workerOrderingScheme = WorkerOrderingScheme.AscendingNameScheme,
                 List<TaskHistoryItem> history = null
             ) 
             : base(id)
@@ -50,7 +50,7 @@ namespace Tasker.Core.Aggregates.TaskAggregate
             Guard.AgainstEmpty(possibleWorkers);
             _possibleWorkers = possibleWorkers;
             CurrentWorker = currentWorker;
-            AssignmentStrategy = taskAssignmetStrategy;
+            WorkerOrderingScheme = workerOrderingScheme;
             if (history == null)
                 _history = new List<TaskHistoryItem>();
         }
@@ -60,10 +60,10 @@ namespace Tasker.Core.Aggregates.TaskAggregate
             string name, 
             List<TaskWorker> possibleWorkers, 
             TaskWorker currentWorker = null,
-            TaskAssignmentStrategy taskAssignmetStrategy = TaskAssignmentStrategy.None,
+            WorkerOrderingScheme workerOrderingScheme = WorkerOrderingScheme.AscendingNameScheme,
             List<TaskHistoryItem> history = null
             )
-            : this(default(int), name, possibleWorkers, currentWorker, taskAssignmetStrategy, history)
+            : this(default(int), name, possibleWorkers, currentWorker, workerOrderingScheme, history)
         {
         }
 
