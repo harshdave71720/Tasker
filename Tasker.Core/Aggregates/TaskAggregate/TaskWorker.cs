@@ -11,12 +11,14 @@ namespace Tasker.Core.Aggregates.TaskAggregate
     {
         public readonly WorkerStatus Status;
         public readonly string FirstName;
-        public readonly string SecondName;
+        public readonly string LastName;
 
-        public TaskWorker(int id, string fname, string lname,WorkerStatus workerStatus) : base(id)
+        public TaskWorker(int id, string fname, string lname, WorkerStatus workerStatus) : base(id)
         {
             Status = workerStatus;
             Guard.AgainstEmptyOrWhiteSpace(fname);
+            FirstName = fname;
+            LastName = lname;
         }
 
         protected override void IdentityGuards(int id)

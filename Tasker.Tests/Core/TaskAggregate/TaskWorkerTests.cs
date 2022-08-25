@@ -26,6 +26,15 @@ namespace Tasker.Tests.Core.TaskAggregate
         }
 
         [Test]
+        public void Constructor_ShouldThrowExceptionWhenFirstNameIsEmpty()
+        {
+            Assert.Throws<ArgumentNullException>(() => { new TaskWorker(1, null, "Doe", WorkerStatus.Available); });
+            Assert.Throws<ArgumentException>(() => { new TaskWorker(1, String.Empty, "Doe", WorkerStatus.Available); });
+            Assert.Throws<ArgumentException>(() => { new TaskWorker(1, "   ", "Doe", WorkerStatus.Available); });
+            Assert.Throws<ArgumentException>(() => { new TaskWorker(1, "   \t \r ", "Doe", WorkerStatus.Available); });
+        }
+
+        [Test]
         public void Equals_ShouldReturnFalseWhenIdsAreDefaultOrNotMatching()
         {
             Assert.False(new TaskWorker(0, "Jane", "Doe", WorkerStatus.Available).Equals(new TaskWorker(0, "Jane", "Doe", WorkerStatus.Available)));
