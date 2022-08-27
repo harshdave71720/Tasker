@@ -5,6 +5,7 @@ using System.Text;
 using Tasker.Core.Abstractions;
 using Tasker.Core.Constants;
 using Tasker.Core.Helpers;
+using Tasker.Core.TaskWorkerOrdering;
 
 namespace Tasker.Core.Aggregates.TaskAggregate
 {
@@ -49,6 +50,11 @@ namespace Tasker.Core.Aggregates.TaskAggregate
             Guard.AgainstNull(possibleWorkers);
             Guard.AgainstEmpty(possibleWorkers);
             _possibleWorkers = possibleWorkers;
+            if (currentWorker?.Status == WorkerStatus.Absent)
+                throw new InvalidOperationException();
+
+            if(currentWorker != null && !possibleWorkers.Contains(currentWorker))
+                throw new InvalidOperationException();
             CurrentWorker = currentWorker;
             WorkerOrderingScheme = workerOrderingScheme;
             if (history == null)
@@ -95,10 +101,14 @@ namespace Tasker.Core.Aggregates.TaskAggregate
             this._history.Add(new TaskHistoryItem(DateTime.Now, CurrentWorker.Id, taskCompletionStatus));
         }
 
-        public void AddWorker(TaskWorker worker)
+        public void AddWorker(TaskWorker worker, WorkerOrderer orderer)
         {
-            if(!this._possibleWorkers.Contains(worker))
-                this._possibleWorkers.Add(worker);
+            Guard.AgainstNull(orderer);
+            if (!_possibleWorkers.Contains(worker))
+            {
+                _possibleWorkers.Add(worker);
+                orderer.OrderWorkers(_possibleWorkers);
+            }
         }
 
         public void RemoveWorker(int workerId)

@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using Tasker.Core.Aggregates.TaskAggregate;
 using Tasker.Core.Constants;
+using Moq;
+using Tasker.Core.TaskWorkerOrdering;
 
 namespace Tasker.Tests.Core.TaskAggregate
 {
@@ -43,7 +45,21 @@ namespace Tasker.Tests.Core.TaskAggregate
         [Test]
         public void Constructor_ShouldThrowExceptionIfIdIsNegative()
         {
-            Assert.Throws<ArgumentException>(() => new Task(-1, "Task2", new List<TaskWorker>(), SampleTaskWorker));
+            Assert.Throws<ArgumentException>(() => new Task(-1, "Task2", new List<TaskWorker>() { SampleTaskWorker }, SampleTaskWorker));
+        }
+
+        [Test]
+        public void Constructor_ShouldThrowExceptionIfCurrentWorkerIsAbsent()
+        {
+            var currentWorker = new TaskWorker(1, "jane", "Doe", WorkerStatus.Absent);
+            Assert.Throws<InvalidOperationException>(() => new Task(1, "Task2", new List<TaskWorker>() { currentWorker }, currentWorker));
+        }
+
+        [Test]
+        public void Constructor_ShouldThrowExceptionIfCurrentWorkerIsNotInWorkersList()
+        {
+            var currentWorker = new TaskWorker(new Random().Next(2, int.MaxValue), "jane", "Doe", WorkerStatus.Available);
+            Assert.Throws<InvalidOperationException>(() => new Task(1, "Task2", new List<TaskWorker>() { SampleTaskWorker }, currentWorker));
         }
 
         [Test]
@@ -151,20 +167,53 @@ namespace Tasker.Tests.Core.TaskAggregate
             var workerToAdd = new TaskWorker(100, "Jane", "Doe", WorkerStatus.Available);
             var sut = new Task("TestTask", new List<TaskWorker> { new TaskWorker(12, "Jane", "Doe", WorkerStatus.Available) }, null);
 
-            sut.AddWorker(workerToAdd);
+            sut.AddWorker(workerToAdd, new Mock<WorkerOrderer>().Object);
 
             Assert.IsNotNull(sut.PossibleWorkers.Single(w => w.Equals(workerToAdd)));
         }
 
         [Test]
-        public void AddWorker_ShouldDoNothingIfWorkerAlreadyAdded()
+        public void AddWorker_ShouldDoNothingIfWorkerAlreadyPresent()
         {
             var workerToAdd = new TaskWorker(100, "Jane", "Doe", WorkerStatus.Available);
             var sut = new Task("TestTask", new List<TaskWorker> { new TaskWorker(workerToAdd.Id, "Jane", "Doe", WorkerStatus.Available) });
 
-            sut.AddWorker(workerToAdd);
+            sut.AddWorker(workerToAdd, new Mock<WorkerOrderer>().Object);
 
             Assert.IsNotNull(sut.PossibleWorkers.Single(w => w.Equals(workerToAdd)));
+        }
+
+        [Test]
+        public void AddWorker_ShouldThorwExceptionIfOrdererIsNull() 
+        {
+            var workerToAdd = new TaskWorker(100, "Jane", "Doe", WorkerStatus.Available);
+            var sut = new Task("TestTask", new List<TaskWorker> { new TaskWorker(4, "Jane", "Doe", WorkerStatus.Available) });
+
+            Assert.Throws<ArgumentNullException>(() => sut.AddWorker(workerToAdd, null));
+        }
+
+        [Test]
+        public void AddWorker_ShouldReorderWorkersIfWorkerAdded()
+        {
+            var workerToAdd = new TaskWorker(100, "Jane", "Doe", WorkerStatus.Available);
+            var sut = new Task("TestTask", new List<TaskWorker> { new TaskWorker(6, "Jane", "Doe", WorkerStatus.Available) });
+            var orderer = new Mock<WorkerOrderer>();
+
+            sut.AddWorker(workerToAdd, orderer.Object);
+
+            orderer.Verify(x => x.OrderWorkers(sut.PossibleWorkers), Times.Once);
+        }
+
+        [Test]
+        public void AddWorker_ShouldNotReorderWorkersIfWorkerWasAlreadyPresent()
+        {
+            var workerToAdd = new TaskWorker(100, "Jane", "Doe", WorkerStatus.Available);
+            var sut = new Task("TestTask", new List<TaskWorker> { new TaskWorker(workerToAdd.Id, "Jane", "Doe", WorkerStatus.Available) });
+            var orderer = new Mock<WorkerOrderer>();
+
+            sut.AddWorker(workerToAdd, orderer.Object);
+
+            orderer.Verify(x => x.OrderWorkers(sut.PossibleWorkers), Times.Never);
         }
 
         [Test]
