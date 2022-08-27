@@ -49,5 +49,23 @@ namespace Tasker.Tests.Core.TaskAggregate
             Assert.True(new TaskWorker(1, "Jane", "Doe", WorkerStatus.Available).Equals(new TaskWorker(1, "Jane", "Doe", WorkerStatus.Available)));
             Assert.True(new TaskWorker(12, "Jane", "Doe", WorkerStatus.Available).Equals(new TaskWorker(12, "Jane", "Doe", WorkerStatus.Available)));
         }
+
+        [Test]
+        public void Constructor_DefaultsOrderToNegativeOne()
+        {
+            var sut = new TaskWorker(1, "Jane", "Doe", WorkerStatus.Available);
+
+            Assert.AreEqual(-1, sut.Order);
+        }
+
+        [TestCase(-1)]
+        [TestCase(int.MinValue)]
+        [TestCase(-2454)]
+        public void Order_ThrowsExceptionWhenSettingNegativeValue(int id)
+        {
+            var sut = new TaskWorker(1, "Jane", "Doe", WorkerStatus.Available, 5);
+
+            Assert.Throws<ArgumentException>(() => sut.Order = id);
+        }
     }
 }

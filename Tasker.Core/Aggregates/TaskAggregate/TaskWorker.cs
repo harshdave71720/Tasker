@@ -12,13 +12,24 @@ namespace Tasker.Core.Aggregates.TaskAggregate
         public readonly WorkerStatus Status;
         public readonly string FirstName;
         public readonly string LastName;
+        private int _order;
+        public int Order 
+        { 
+            get { return _order;  }
+            set 
+            {
+                Guard.AgainstNegative(value);
+                _order = value;
+            }
+        }
 
-        public TaskWorker(int id, string fname, string lname, WorkerStatus workerStatus) : base(id)
+        public TaskWorker(int id, string fname, string lname, WorkerStatus workerStatus, int order = -1) : base(id)
         {
             Status = workerStatus;
             Guard.AgainstEmptyOrWhiteSpace(fname);
             FirstName = fname;
             LastName = lname;
+            _order = order;
         }
 
         protected override void IdentityGuards(int id)
