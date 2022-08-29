@@ -47,6 +47,12 @@ namespace Tasker.Core.Helpers
                 throw new ArgumentException();
         }
 
+        public static void AgainstDefault<T>(T number)
+        {
+            if (number.Equals(default(T)))
+                throw new ArgumentException();
+        }
+
         public static void AgainstEmpty<T>(IEnumerable<T> collection)
         {
             if (collection.Count() == 0)
