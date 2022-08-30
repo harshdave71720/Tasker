@@ -86,13 +86,13 @@ namespace Tasker.Tests.Core.TaskAggregate
         }
 
         [Test]
-        public void MarkDone_ShouldSetCurrentWorkerToNull()
+        public void MarkDone_ShouldUpdateCurrentWorker()
         {
             var worker = SampleTaskWorker;
-            var sut = new Task("Task1", CreateWorkerPool(SampleTaskWorker), currentWorker: worker);
+            var sut = new Task("Task1", CreateWorkerPool(worker, new TaskWorker(2, "worker2", null, WorkerStatus.Available)), currentWorker: worker);
 
             sut.MarkDone();
-            Assert.IsNull(sut.CurrentWorker);
+            Assert.AreNotEqual(worker, sut.CurrentWorker);
         }
 
         [Test]
@@ -118,13 +118,13 @@ namespace Tasker.Tests.Core.TaskAggregate
         }
 
         [Test]
-        public void Skip_ShouldSetCurrentWorkerToNull()
+        public void Skip_ShouldUpdateCurrentWorker()
         {
             var worker = SampleTaskWorker;
-            var sut = new Task("Task1", CreateWorkerPool(worker), currentWorker: worker);
+            var sut = new Task("Task1", CreateWorkerPool(worker, new TaskWorker(2, "worker2", null, WorkerStatus.Available)), currentWorker: worker);
 
             sut.Skip();
-            Assert.IsNull(sut.CurrentWorker);
+            Assert.AreNotEqual(worker, sut.CurrentWorker);
         }
 
         [TestCase(1)]

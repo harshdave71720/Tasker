@@ -84,7 +84,7 @@ namespace Tasker.Core.Aggregates.TaskAggregate
                 throw new InvalidOperationException();
 
             this.AddHistory(TaskCompletionStatus.Done);
-            CurrentWorker = null;
+            CurrentWorker = _workerPool.GetNextWorker(CurrentWorker);
         }
 
         public void Skip()
@@ -93,7 +93,7 @@ namespace Tasker.Core.Aggregates.TaskAggregate
                 throw new InvalidOperationException();
 
             this.AddHistory(TaskCompletionStatus.Skipped);
-            CurrentWorker = null;
+            CurrentWorker = _workerPool.GetNextWorker(CurrentWorker);
         }
 
         private void AddHistory(TaskCompletionStatus taskCompletionStatus)
