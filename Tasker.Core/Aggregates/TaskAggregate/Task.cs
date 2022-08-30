@@ -15,10 +15,10 @@ namespace Tasker.Core.Aggregates.TaskAggregate
 
         public IReadOnlyList<TaskWorker> PossibleWorkers 
         {
-            get { return _possibleWorkers; }
+            get { return _workerPool.Workers; }
         }
 
-        private List<TaskWorker> _possibleWorkers;
+        private WorkerPool _workerPool;
 
         public TaskWorker CurrentWorker { get; private set; }
 
@@ -38,7 +38,7 @@ namespace Tasker.Core.Aggregates.TaskAggregate
             (
                 int id, 
                 string name, 
-                List<TaskWorker> possibleWorkers, 
+                WorkerPool workerPool, 
                 TaskWorker currentWorker = null, 
                 WorkerOrderingScheme workerOrderingScheme = WorkerOrderingScheme.AscendingNameScheme,
                 List<TaskHistoryItem> history = null
@@ -47,14 +47,14 @@ namespace Tasker.Core.Aggregates.TaskAggregate
         {
             Guard.AgainstEmptyOrWhiteSpace(name);
             Name = name;
-            Guard.AgainstNull(possibleWorkers);
-            Guard.AgainstEmpty(possibleWorkers);
-            _possibleWorkers = possibleWorkers;
+            Guard.AgainstNull(workerPool);
+            _workerPool = workerPool;
             if (currentWorker?.Status == WorkerStatus.Absent)
                 throw new InvalidOperationException();
 
-            if(currentWorker != null && !possibleWorkers.Contains(currentWorker))
+            if(currentWorker != null && !workerPool.Contains(currentWorker))
                 throw new InvalidOperationException();
+
             CurrentWorker = currentWorker;
             WorkerOrderingScheme = workerOrderingScheme;
             if (history == null)
@@ -63,13 +63,13 @@ namespace Tasker.Core.Aggregates.TaskAggregate
 
         public Task
             (
-            string name, 
-            List<TaskWorker> possibleWorkers, 
+            string name,
+            WorkerPool workerPool,
             TaskWorker currentWorker = null,
             WorkerOrderingScheme workerOrderingScheme = WorkerOrderingScheme.AscendingNameScheme,
             List<TaskHistoryItem> history = null
             )
-            : this(default(int), name, possibleWorkers, currentWorker, workerOrderingScheme, history)
+            : this(default(int), name, workerPool, currentWorker, workerOrderingScheme, history)
         {
         }
 
@@ -84,7 +84,7 @@ namespace Tasker.Core.Aggregates.TaskAggregate
                 throw new InvalidOperationException();
 
             this.AddHistory(TaskCompletionStatus.Done);
-            CurrentWorker = null;
+            CurrentWorker = _workerPool.GetNextWorker(CurrentWorker);
         }
 
         public void Skip()
@@ -93,7 +93,7 @@ namespace Tasker.Core.Aggregates.TaskAggregate
                 throw new InvalidOperationException();
 
             this.AddHistory(TaskCompletionStatus.Skipped);
-            CurrentWorker = null;
+            CurrentWorker = _workerPool.GetNextWorker(CurrentWorker);
         }
 
         private void AddHistory(TaskCompletionStatus taskCompletionStatus)
@@ -101,26 +101,17 @@ namespace Tasker.Core.Aggregates.TaskAggregate
             this._history.Add(new TaskHistoryItem(DateTime.Now, CurrentWorker.Id, taskCompletionStatus));
         }
 
-        public void AddWorker(TaskWorker worker, WorkerOrderer orderer)
+        public void AddWorker(TaskWorker worker)
         {
-            Guard.AgainstNull(orderer);
-            if (!_possibleWorkers.Contains(worker))
-            {
-                _possibleWorkers.Add(worker);
-                orderer.OrderWorkers(_possibleWorkers);
-            }
+            Guard.AgainstNull(worker);
+            _workerPool.AddWorker(worker);
         }
 
         public void RemoveWorker(int workerId)
         {
-            var workerToRemove = _possibleWorkers.SingleOrDefault(w => w.Id == workerId);
-            if (workerToRemove == null)
-                return;
-
-            if (workerToRemove.Equals(CurrentWorker))
+            if (workerId == CurrentWorker?.Id)
                 throw new InvalidOperationException();
-
-            _possibleWorkers.Remove(workerToRemove);
+            _workerPool.RemoveWorker(workerId);
         }
     }
 }

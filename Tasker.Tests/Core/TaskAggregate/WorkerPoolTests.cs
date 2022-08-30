@@ -198,6 +198,45 @@ namespace Tasker.Tests.Core.TaskAggregate
             orderer.Verify(o => o.OrderWorkers(It.IsAny<IEnumerable<TaskWorker>>()), Times.Exactly(1));
         }
 
+        [Test]
+        public void Contains_ShouldThrowExceptionIfWorkerIsNull()
+        {
+            var workers = new List<TaskWorker>() { SampleTaskWorker };
+            var orderer = new Mock<WorkerOrderer>();
+            SetupSerialOrdering(orderer);
+            var ordererFactory = new Mock<IWorkerOrdererFactory>();
+            ordererFactory.Setup(f => f.CreateOrderer(It.IsAny<WorkerOrderingScheme>())).Returns(orderer.Object);
+            var sut = new WorkerPool(workers, ordererFactory.Object, WorkerOrderingScheme.AscendingNameScheme);
+
+            Assert.Throws<ArgumentNullException>(() => sut.Contains(null));
+        }
+
+        [Test]
+        public void Contains_ShouldReturnTrueIfWorkerExists()
+        {
+            var workers = new List<TaskWorker>() { SampleTaskWorker };
+            var orderer = new Mock<WorkerOrderer>();
+            SetupSerialOrdering(orderer);
+            var ordererFactory = new Mock<IWorkerOrdererFactory>();
+            ordererFactory.Setup(f => f.CreateOrderer(It.IsAny<WorkerOrderingScheme>())).Returns(orderer.Object);
+            var sut = new WorkerPool(workers, ordererFactory.Object, WorkerOrderingScheme.AscendingNameScheme);
+
+            Assert.True(sut.Contains(SampleTaskWorker));
+        }
+
+        [Test]
+        public void Contains_ShouldReturnFalseIfWorkerNotExists()
+        {
+            var workers = new List<TaskWorker>() { SampleTaskWorker };
+            var orderer = new Mock<WorkerOrderer>();
+            SetupSerialOrdering(orderer);
+            var ordererFactory = new Mock<IWorkerOrdererFactory>();
+            ordererFactory.Setup(f => f.CreateOrderer(It.IsAny<WorkerOrderingScheme>())).Returns(orderer.Object);
+            var sut = new WorkerPool(workers, ordererFactory.Object, WorkerOrderingScheme.AscendingNameScheme);
+
+            Assert.False(sut.Contains(new TaskWorker(1235, "NotExist", null, WorkerStatus.Available)));
+        }
+
         private void SetupSerialOrdering(Mock<WorkerOrderer> orderer)
         {
             orderer.Setup(o => o.OrderWorkers(It.IsAny<IEnumerable<TaskWorker>>()))
