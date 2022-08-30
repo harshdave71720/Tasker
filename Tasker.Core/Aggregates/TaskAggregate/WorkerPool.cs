@@ -79,5 +79,11 @@ namespace Tasker.Core.Aggregates.TaskAggregate
             workers.Remove(worker);
             OrderWorkers(workers);
         }
+
+        public bool Contains(TaskWorker worker)
+        {
+            Guard.AgainstNull(worker);
+            return _workers.Values.Contains(worker);
+        }
     }
 }
