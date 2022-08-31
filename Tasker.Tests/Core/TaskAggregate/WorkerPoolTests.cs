@@ -16,10 +16,9 @@ namespace Tasker.Tests.Core.TaskAggregate
         private TaskWorker SampleTaskWorker => new TaskWorker(1, "Jane", "Doe", WorkerStatus.Available);
             
         [Test]
-        public void Constructor_ShouldThrowExceptionIfWorkersIsNullOrEmpty()
+        public void Constructor_ShouldThrowExceptionIfWorkersIsNull()
         {
             Assert.Throws<ArgumentNullException>(() => new WorkerPool(null, new Mock<IWorkerOrdererFactory>().Object, WorkerOrderingScheme.None));
-            Assert.Throws<ArgumentException>(() => new WorkerPool(new List<TaskWorker>(), new Mock<IWorkerOrdererFactory>().Object, WorkerOrderingScheme.None));
         }
 
         [Test]
