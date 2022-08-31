@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Tasker.Core.Aggregates.TaskAggregate;
 
 namespace Tasker.Core.TaskWorkerOrdering
@@ -8,7 +9,12 @@ namespace Tasker.Core.TaskWorkerOrdering
     {
         public override void OrderWorkers(IEnumerable<TaskWorker> workers)
         {
-            throw new NotImplementedException();
+            workers = workers.OrderBy(w => w.FirstName.ToUpper()).ThenBy(w => w.LastName?.ToUpper());
+            int order = 1;
+            foreach (var worker in workers)
+            {
+                worker.Order = order++;
+            }
         }
     }
 }
