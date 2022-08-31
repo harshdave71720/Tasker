@@ -28,10 +28,9 @@ namespace Tasker.Tests.Core.TaskAggregate
         }
 
         [Test]
-        public void Constructor_ShouldThrowExceptionIfWorkersAreNullOrEmpty()
+        public void Constructor_ShouldThrowExceptionIfWorkersAreNull()
         {
             Assert.Throws<ArgumentNullException>(() => new Task("Task1", null, SampleTaskWorker));
-            Assert.Throws<ArgumentException>(() => new Task("Task2", CreateWorkerPool(), SampleTaskWorker));
         }
 
         [Test]
@@ -236,6 +235,15 @@ namespace Tasker.Tests.Core.TaskAggregate
             var sut = new Task("TestTask", CreateWorkerPool(SampleTaskWorker, new TaskWorker(workerToRemove.Id, "Jane", "Doe", WorkerStatus.Absent)), workerToRemove);
 
             Assert.Throws<InvalidOperationException>(() => sut.RemoveWorker(workerToRemove.Id));
+        }
+
+        [Test]
+        public void CurrentWorker_ShouldThrowExceptionIfWorkerNotExistInPool()
+        {
+            var currentWorker = new TaskWorker(10, "Jane", "Doe", WorkerStatus.Available);
+            var sut = new Task("TestTask", CreateWorkerPool(SampleTaskWorker));
+
+            Assert.Throws<InvalidOperationException>(() => sut.CurrentWorker = currentWorker);
         }
 
         private WorkerPool CreateWorkerPool(params TaskWorker[] workers)

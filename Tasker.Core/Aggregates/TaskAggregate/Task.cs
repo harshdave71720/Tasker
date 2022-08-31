@@ -20,7 +20,18 @@ namespace Tasker.Core.Aggregates.TaskAggregate
 
         private WorkerPool _workerPool;
 
-        public TaskWorker CurrentWorker { get; private set; }
+        private TaskWorker _currentWorker;
+
+        public TaskWorker CurrentWorker 
+        {
+            get { return _currentWorker; }
+            set 
+            {
+                if (!_workerPool.Contains(value))
+                    throw new InvalidOperationException();
+                _currentWorker = value;
+            }
+        }
 
         public WorkerOrderingScheme WorkerOrderingScheme { get; private set; }
 
@@ -55,7 +66,7 @@ namespace Tasker.Core.Aggregates.TaskAggregate
             if(currentWorker != null && !workerPool.Contains(currentWorker))
                 throw new InvalidOperationException();
 
-            CurrentWorker = currentWorker;
+            _currentWorker = currentWorker;
             WorkerOrderingScheme = workerOrderingScheme;
             if (history == null)
                 _history = new List<TaskHistoryItem>();
@@ -80,25 +91,25 @@ namespace Tasker.Core.Aggregates.TaskAggregate
 
         public void MarkDone()
         {
-            if (CurrentWorker == null)
+            if (_currentWorker == null)
                 throw new InvalidOperationException();
 
             this.AddHistory(TaskCompletionStatus.Done);
-            CurrentWorker = _workerPool.GetNextWorker(CurrentWorker);
+            _currentWorker = _workerPool.GetNextWorker(_currentWorker);
         }
 
         public void Skip()
         {
-            if (CurrentWorker == null)
+            if (_currentWorker == null)
                 throw new InvalidOperationException();
 
             this.AddHistory(TaskCompletionStatus.Skipped);
-            CurrentWorker = _workerPool.GetNextWorker(CurrentWorker);
+            _currentWorker = _workerPool.GetNextWorker(_currentWorker);
         }
 
         private void AddHistory(TaskCompletionStatus taskCompletionStatus)
         {
-            this._history.Add(new TaskHistoryItem(DateTime.Now, CurrentWorker.Id, taskCompletionStatus));
+            this._history.Add(new TaskHistoryItem(DateTime.Now, _currentWorker.Id, taskCompletionStatus));
         }
 
         public void AddWorker(TaskWorker worker)
@@ -109,7 +120,7 @@ namespace Tasker.Core.Aggregates.TaskAggregate
 
         public void RemoveWorker(int workerId)
         {
-            if (workerId == CurrentWorker?.Id)
+            if (workerId == _currentWorker?.Id)
                 throw new InvalidOperationException();
             _workerPool.RemoveWorker(workerId);
         }
