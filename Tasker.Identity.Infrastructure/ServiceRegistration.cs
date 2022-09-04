@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -11,11 +12,12 @@ namespace Tasker.Identity.Infrastructure
 {
     public static class ServiceRegistration
     {
-        public static void ConfigureIdentityServices(this IServiceCollection services)
+        public static void ConfigureIdentityServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<IdentityDbContext>(options => 
             {
-                options.UseMySql("server=localhost;user=root;password=root;database=Tasker",
+                //options.UseMySql("server=localhost;user=root;password=root;database=Tasker",
+                options.UseMySql(configuration.GetConnectionString("IdentityDb"),
                     options =>
                     {
                         options.ServerVersion(new Version(8, 0, 25).ToString());
