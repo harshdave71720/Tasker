@@ -14,9 +14,8 @@ namespace Tasker.Identity.Infrastructure
     {
         public static void ConfigureIdentityServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<IdentityDbContext>(options => 
+            services.AddDbContext<AppIdentityDbContext>(options => 
             {
-                //options.UseMySql("server=localhost;user=root;password=root;database=Tasker",
                 options.UseMySql(configuration.GetConnectionString("IdentityDb"),
                     options =>
                     {
@@ -26,7 +25,7 @@ namespace Tasker.Identity.Infrastructure
                     });
             });
             services.AddIdentityCore<AppIdentityUser>(options => { });
-            services.AddScoped<IUserStore<AppIdentityUser>, UserOnlyStore<AppIdentityUser, IdentityDbContext>>();
+            services.AddScoped<IUserStore<AppIdentityUser>, UserOnlyStore<AppIdentityUser, AppIdentityDbContext>>();
         }
     }
 }
