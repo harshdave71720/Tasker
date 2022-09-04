@@ -13,6 +13,6 @@ namespace Tasker.Identity.Application.Services
 
         public void UpdatePassword(string email, string newPassword);
 
-        public void Register(string email, string firstname, string password);
+        public void Register(string email, string password);
     }
 }

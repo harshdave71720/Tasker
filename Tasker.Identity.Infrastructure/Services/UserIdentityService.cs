@@ -13,7 +13,7 @@ namespace Tasker.Identity.Infrastructure.Services
             throw new NotImplementedException();
         }
 
-        public void Register(string email, string firstname, string password)
+        public void Register(string email, string password)
         {
             throw new NotImplementedException();
         }
