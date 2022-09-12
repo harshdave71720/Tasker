@@ -3,19 +3,31 @@ using System.Collections.Generic;
 using System.Text;
 using Tasker.Identity.Application.Services;
 using Tasker.Identity.Application.Models;
+using Microsoft.AspNetCore.Identity;
+using Tasker.Identity.Infrastructure.Models;
+using Tasker.Core.Helpers;
+using System.Linq;
 
 namespace Tasker.Identity.Infrastructure.Services
 {
     internal class UserIdentityService : IUserIdentityService
     {
+        private readonly UserManager<AppIdentityUser> _userManager;
+
+        public UserIdentityService(UserManager<AppIdentityUser> userManager)
+        {
+            Guard.AgainstNull(userManager);
+            _userManager = userManager;
+        }
+
         public IIdentityUser GetIdentityUser(string email)
         {
-            throw new NotImplementedException();
+            return _userManager.Users.SingleOrDefault(u => u.Email == email);
         }
 
         public void Register(string email, string password)
         {
-            throw new NotImplementedException();
+            _userManager.CreateAsync(new AppIdentityUser(email), password);
         }
 
         public void UpdatePassword(string email, string newPassword)
@@ -25,7 +37,10 @@ namespace Tasker.Identity.Infrastructure.Services
 
         public bool ValidatePassword(string email, string password)
         {
-            throw new NotImplementedException();
+            var user = _userManager.Users.SingleOrDefault(u => u.Email == email);
+            if (user == null)
+                return false;
+            return _userManager.CheckPasswordAsync(user, password).Result;
         }
     }
 }
