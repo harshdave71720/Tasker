@@ -40,6 +40,7 @@ namespace Tasker.WebAPI
             });
 
             services.AddControllers();
+            services.AddSwaggerGen();
             services.ConfigureIdentityServices(Configuration);
         }
 
@@ -51,10 +52,13 @@ namespace Tasker.WebAPI
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseSwagger();
+            app.UseSwaggerUI();
+
             app.UseHttpsRedirection();
-
             app.UseRouting();
-
+            app.UseAuthentication();
+            
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

@@ -22,7 +22,7 @@ namespace Tasker.Identity.Infrastructure.Services
 
         public string GetBearerToken(IIdentityUser user)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfiguration.Key));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(@_jwtConfiguration.Key));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var claims = new Claim[] 
             {
@@ -32,7 +32,7 @@ namespace Tasker.Identity.Infrastructure.Services
             var token = new JwtSecurityToken
             (
                 _jwtConfiguration.Issuer,
-                null,
+                _jwtConfiguration.Issuer,
                 claims,
                 expires: DateTime.Now.AddMinutes(_jwtConfiguration.ExpireMinutes),
                 signingCredentials: credentials

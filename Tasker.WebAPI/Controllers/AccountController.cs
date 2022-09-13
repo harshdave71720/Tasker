@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Tasker.Core.Helpers;
 using Tasker.Identity.Application.Services;
@@ -7,6 +8,7 @@ using Tasker.WebAPI.Models;
 namespace Tasker.WebAPI.Controllers
 {
     [Route("[controller]")]
+    [ApiController]
     public class AccountController : Controller
     {
         private readonly IUserIdentityService _userIdentityService;
@@ -23,7 +25,7 @@ namespace Tasker.WebAPI.Controllers
 
         [HttpPost]
         [Route("Register")]
-        public IActionResult Register(RegisterUserModel userModel) 
+        public IActionResult Register(RegisterUserModel userModel)
         {
             var exisitingUser = _userIdentityService.GetIdentityUser(userModel.Email);
             if (exisitingUser != null)
@@ -40,8 +42,19 @@ namespace Tasker.WebAPI.Controllers
             if (exisitingUser == null)
                 return BadRequest();
 
-            _userIdentityService.ValidatePassword(loginModel.Email, loginModel.Password);
+            var userValid = _userIdentityService.ValidatePassword(loginModel.Email, loginModel.Password);
+            if(!userValid)
+                return BadRequest();
+
             return Ok(_bearerTokenService.GetBearerToken(exisitingUser));
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("sample")]
+        public IActionResult Get()
+        {
+            return Ok();
         }
     }
 }

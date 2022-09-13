@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Tasker.Identity.Application.Services;
 using Tasker.Identity.Infrastructure.Configuration;
 using Tasker.Identity.Infrastructure.Models;
@@ -37,21 +38,27 @@ namespace Tasker.Identity.Infrastructure
                 }
             );
             services.AddScoped<IUserStore<AppIdentityUser>, UserOnlyStore<AppIdentityUser, AppIdentityDbContext>>();
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
                     //ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
+                    //ValidateLifetime = true,
+                    //ValidateIssuerSigningKey = true,
                     ValidIssuer = configuration["JwtConfiguration:Issuer"],
-                    //ValidAudience = configuration["JwtConfiguration:Issuer"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtConfiguration:Key"]))
+                    ValidAudience = configuration["JwtConfiguration:Issuer"],
+                    ClockSkew = TimeSpan.FromMinutes(int.Parse(configuration["JwtConfiguration:ClockSkew"])),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(@configuration["JwtConfiguration:Key"]))
                 };
             });
             services.Configure<JwtConfigurationOptions>(configuration.GetSection(JwtConfigurationOptions.JwtConfiguration));
             services.AddScoped<IBearerTokenService, BearerTokenService>();
+            services.AddScoped<IUserIdentityService, UserIdentityService>();
         }
     }
 }
