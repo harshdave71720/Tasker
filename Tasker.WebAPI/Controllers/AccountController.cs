@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using System.Transactions;
+using Tasker.Application.Repositories;
+using Tasker.Core.Aggregates.UserAggregate;
 using Tasker.Core.Helpers;
 using Tasker.Identity.Application.Services;
 using Tasker.WebAPI.Models;
@@ -13,6 +16,7 @@ namespace Tasker.WebAPI.Controllers
     {
         private readonly IUserIdentityService _userIdentityService;
         private readonly IBearerTokenService _bearerTokenService;
+        private readonly IUserRepository _userRepository;
 
         public AccountController(IUserIdentityService userIdentityService, IBearerTokenService bearerTokenService)
         {
@@ -30,7 +34,12 @@ namespace Tasker.WebAPI.Controllers
             var exisitingUser = _userIdentityService.GetIdentityUser(userModel.Email);
             if (exisitingUser != null)
                 return Ok();
-            _userIdentityService.Register(userModel.Email, userModel.Password);
+            using (TransactionScope scope = new TransactionScope())
+            {
+                _userIdentityService.Register(userModel.Email, userModel.Password);
+                _userRepository.Save(new User(userModel.Email, userModel.FirstName, userModel.LastName));
+                scope.Complete();
+            }
             return Ok();
         }
 

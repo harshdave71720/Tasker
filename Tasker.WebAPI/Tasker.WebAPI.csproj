@@ -5,6 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Tasker.Application\Tasker.Application.csproj" />
+    <ProjectReference Include="..\Tasker.Core\Tasker.Core.csproj" />
     <ProjectReference Include="..\Tasker.Identity.Application\Tasker.Identity.Application.csproj" />
     <ProjectReference Include="..\Tasker.Identity.Infrastructure\Tasker.Identity.Infrastructure.csproj" />
   </ItemGroup>
