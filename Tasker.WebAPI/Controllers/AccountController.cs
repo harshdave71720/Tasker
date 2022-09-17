@@ -45,13 +45,13 @@ namespace Tasker.WebAPI.Controllers
 
         [HttpPost]
         [Route("Login")]
-        public IActionResult Login(UserLoginModel loginModel)
+        public async Task<IActionResult> Login(UserLoginModel loginModel)
         {
             var exisitingUser = _userIdentityService.GetIdentityUser(loginModel.Email);
             if (exisitingUser == null)
                 return BadRequest();
 
-            var userValid = _userIdentityService.ValidatePassword(loginModel.Email, loginModel.Password);
+            var userValid = await _userIdentityService.ValidatePassword(loginModel.Email, loginModel.Password);
             if(!userValid)
                 return BadRequest();
 
