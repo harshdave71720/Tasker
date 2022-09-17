@@ -6,7 +6,8 @@ namespace Tasker.Core.Constants
 {
     public enum UserStatus
     {
-        Active,
-        Inactive
+        Inactive,
+        Active
+        
     }
 }
