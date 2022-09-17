@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Tasker.Application.Repositories;
 using Tasker.Core.Aggregates.UserAggregate;
 using Tasker.Infrastructure.Settings;
@@ -12,22 +13,22 @@ namespace Tasker.Infrastructure.Repositories
     {
         public UserRepository(IOptions<DataStoreSettings> settingOptions) : base(settingOptions) { }
 
-        public bool Delete(int Id)
+        public Task<bool> Delete(int Id)
         {
             throw new NotImplementedException();
         }
 
-        public User Get(int Id)
+        public Task<User> Get(int Id)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<User> GetAll()
+        public Task<IEnumerable<User>> GetAll()
         {
             throw new NotImplementedException();
         }
 
-        public bool Save(User item)
+        public Task<bool> Save(User item)
         {
             throw new NotImplementedException();
         }
