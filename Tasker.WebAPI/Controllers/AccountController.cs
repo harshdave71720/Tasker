@@ -57,13 +57,5 @@ namespace Tasker.WebAPI.Controllers
 
             return Ok(_bearerTokenService.GetBearerToken(exisitingUser));
         }
-
-        [Authorize]
-        [HttpGet]
-        [Route("sample")]
-        public IActionResult Get()
-        {
-            return Ok();
-        }
     }
 }
