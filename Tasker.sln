@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tasker.Identity.Application
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tasker.Identity.Infrastructure", "Tasker.Identity.Infrastructure\Tasker.Identity.Infrastructure.csproj", "{33FDA2C4-0366-4695-B403-000ECD976C73}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tasker.WebAPI", "Tasker.WebAPI\Tasker.WebAPI.csproj", "{5CE95A32-4FF6-490A-9288-5AED41E46A84}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tasker.WebAPI", "Tasker.WebAPI\Tasker.WebAPI.csproj", "{5CE95A32-4FF6-490A-9288-5AED41E46A84}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tasker.Infrastructure", "Tasker.Infrastructure\Tasker.Infrastructure.csproj", "{99C1A503-B5FE-4642-BD5F-51B061ED443C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +49,10 @@ Global
 		{5CE95A32-4FF6-490A-9288-5AED41E46A84}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CE95A32-4FF6-490A-9288-5AED41E46A84}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5CE95A32-4FF6-490A-9288-5AED41E46A84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99C1A503-B5FE-4642-BD5F-51B061ED443C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99C1A503-B5FE-4642-BD5F-51B061ED443C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99C1A503-B5FE-4642-BD5F-51B061ED443C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99C1A503-B5FE-4642-BD5F-51B061ED443C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

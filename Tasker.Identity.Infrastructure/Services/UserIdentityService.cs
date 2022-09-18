@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Tasker.Identity.Infrastructure.Models;
 using Tasker.Core.Helpers;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Tasker.Identity.Infrastructure.Services
 {
@@ -25,9 +26,11 @@ namespace Tasker.Identity.Infrastructure.Services
             return _userManager.Users.SingleOrDefault(u => u.Email == email);
         }
 
-        public void Register(string email, string password)
+        public async Task Register(string email, string password)
         {
-            _userManager.CreateAsync(new AppIdentityUser(email), password);
+            var result = await _userManager.CreateAsync(new AppIdentityUser(email), password);
+            if (!result.Succeeded)
+                throw new Exception();
         }
 
         public void UpdatePassword(string email, string newPassword)
@@ -35,12 +38,12 @@ namespace Tasker.Identity.Infrastructure.Services
             throw new NotImplementedException();
         }
 
-        public bool ValidatePassword(string email, string password)
+        public async Task<bool> ValidatePassword(string email, string password)
         {
             var user = _userManager.Users.SingleOrDefault(u => u.Email == email);
             if (user == null)
                 return false;
-            return _userManager.CheckPasswordAsync(user, password).Result;
+            return await _userManager.CheckPasswordAsync(user, password);
         }
     }
 }
