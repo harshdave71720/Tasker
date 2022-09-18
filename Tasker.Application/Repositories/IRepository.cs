@@ -10,10 +10,10 @@ namespace Tasker.Application.Repositories
     {
         public Task<IEnumerable<TRoot>> GetAll();
 
-        public Task<TRoot> Get(TKey Id);
+        public Task<TRoot> Get(TKey id);
 
-        public Task<bool> Delete(TKey Id);
+        public Task<bool> Delete(TKey id);
 
-        public Task<bool> Save(TRoot item);
+        public Task<TRoot> Save(TRoot item);
     }
 }

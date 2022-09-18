@@ -28,7 +28,9 @@ namespace Tasker.Identity.Infrastructure.Services
 
         public async Task Register(string email, string password)
         {
-            await _userManager.CreateAsync(new AppIdentityUser(email), password);
+            var result = await _userManager.CreateAsync(new AppIdentityUser(email), password);
+            if (!result.Succeeded)
+                throw new Exception();
         }
 
         public void UpdatePassword(string email, string newPassword)

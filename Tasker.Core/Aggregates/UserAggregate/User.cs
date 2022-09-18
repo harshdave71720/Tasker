@@ -9,9 +9,19 @@ namespace Tasker.Core.Aggregates.UserAggregate
 {
     public class User : Entity<int>
     {
-        public string FirstName { get; private set; }
+        public string FirstName 
+        { 
+            get { return _firstName; }
+            set 
+            {
+                Guard.AgainstEmptyOrWhiteSpace(value);
+                _firstName = value;
+            }
+        }
 
-        public string LastName { get; private set; }
+        private string _firstName;
+
+        public string LastName { get; set; }
 
         public string EmailAddress { get; private set; }
 
@@ -31,10 +41,10 @@ namespace Tasker.Core.Aggregates.UserAggregate
         {
             Guard.AgainstInvalidEmail(email);
             EmailAddress = email;
-            Guard.AgainstEmptyOrWhiteSpace(firstname);
             FirstName = firstname;
             LastName = lastname;
             WorkerStatus = workerStatus;
+            Status = UserStatus.Active;
         }
 
         public User

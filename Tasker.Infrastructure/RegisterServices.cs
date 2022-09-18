@@ -8,7 +8,7 @@ namespace Tasker.Infrastructure
 {
     public static class RegisterServices
     {
-        public static void ConfigureIdentityServices(this IServiceCollection services, IConfiguration configuration)
+        public static void ConfigureInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<DataStoreSettings>(configuration.GetSection(DataStoreSettings.SectionName));
             services.AddScoped<IUserRepository, UserRepository>();

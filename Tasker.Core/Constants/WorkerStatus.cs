@@ -6,7 +6,7 @@ namespace Tasker.Core.Constants
 {
     public enum WorkerStatus
     {
-        Available,
-        Absent
+        Absent,
+        Available
     }
 }

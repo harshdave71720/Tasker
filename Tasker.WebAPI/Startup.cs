@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Tasker.Identity.Infrastructure;
+using Tasker.Infrastructure;
 
 namespace Tasker.WebAPI
 {
@@ -42,6 +43,7 @@ namespace Tasker.WebAPI
             services.AddControllers();
             services.AddSwaggerGen();
             services.ConfigureIdentityServices(Configuration);
+            services.ConfigureInfrastructureServices(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
