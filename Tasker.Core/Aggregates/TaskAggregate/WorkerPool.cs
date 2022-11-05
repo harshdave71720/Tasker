@@ -24,7 +24,7 @@ namespace Tasker.Core.Aggregates.TaskAggregate
             }
         }
 
-        public WorkerPool(HashSet<TaskWorker> workers, IWorkerOrdererFactory ordererFactory, WorkerOrderingScheme orderingScheme)
+        public WorkerPool(HashSet<TaskWorker> workers, IWorkerOrdererFactory ordererFactory, WorkerOrderingScheme orderingScheme = WorkerOrderingScheme.AscendingNameScheme)
         {
             Guard.AgainstNull(workers);
             Guard.AgainstNull(ordererFactory);
@@ -60,7 +60,7 @@ namespace Tasker.Core.Aggregates.TaskAggregate
         {
             Guard.AgainstNull(taskWorker);
 
-            var workers = _workers.Values.ToList();
+            var workers = _workers.Values.ToHashSet();
             if (workers.Contains(taskWorker))
                 return;
 
