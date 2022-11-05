@@ -2,7 +2,7 @@
 {
     public class Response<TData>
     {
-        public readonly TData Data;
+        public TData Data { get; private set; }
         public Response(TData data)
         {
             Data = data;
