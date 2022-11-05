@@ -30,7 +30,7 @@ namespace Tasker.Identity.Infrastructure.Services
         {
             var result = await _userManager.CreateAsync(new AppIdentityUser(email), password);
             if (!result.Succeeded)
-                throw new Exception();
+                throw new Exception("Identity User not created");
         }
 
         public void UpdatePassword(string email, string newPassword)
