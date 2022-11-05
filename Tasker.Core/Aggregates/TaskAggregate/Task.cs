@@ -48,16 +48,16 @@ namespace Tasker.Core.Aggregates.TaskAggregate
         }
 
         public Task
-            (
-                int id, 
-                string name,
-                WorkerPool workerPool, 
-                TaskWorker currentWorker = null, 
-                WorkerOrderingScheme workerOrderingScheme = WorkerOrderingScheme.AscendingNameScheme,
-                List<TaskHistoryItem> history = null,
-                DateTime? createdOn = null
-            ) 
-            : base(id)
+        (
+            int id, 
+            string name,
+            WorkerPool workerPool, 
+            TaskWorker currentWorker = null, 
+            WorkerOrderingScheme workerOrderingScheme = WorkerOrderingScheme.AscendingNameScheme,
+            List<TaskHistoryItem> history = null,
+            DateTime? createdOn = null
+        ) 
+        : base(id)
         {
             Guard.AgainstEmptyOrWhiteSpace(name);
             Name = name;
@@ -78,17 +78,15 @@ namespace Tasker.Core.Aggregates.TaskAggregate
         }
 
         public Task
-            (
-            string name,
-            WorkerPool workerPool,
-            TaskWorker currentWorker = null,
-            WorkerOrderingScheme workerOrderingScheme = WorkerOrderingScheme.AscendingNameScheme,
-            List<TaskHistoryItem> history = null,
-            DateTime? createdOn = null
-            )
-            : this(default(int), name, workerPool, currentWorker, workerOrderingScheme, history, createdOn)
-        {
-        }
+        (
+        string name,
+        WorkerPool workerPool,
+        TaskWorker currentWorker = null,
+        WorkerOrderingScheme workerOrderingScheme = WorkerOrderingScheme.AscendingNameScheme,
+        List<TaskHistoryItem> history = null,
+        DateTime? createdOn = null
+        )
+        : this(default(int), name, workerPool, currentWorker, workerOrderingScheme, history, createdOn){}
 
         protected override void IdentityGuards(int id)
         {
