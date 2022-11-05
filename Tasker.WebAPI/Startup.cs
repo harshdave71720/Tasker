@@ -56,7 +56,10 @@ namespace Tasker.WebAPI
             }
 
             app.UseSwagger();
-            app.UseSwaggerUI();
+            app.UseSwaggerUI(options =>
+            {
+                options.EnableTryItOutByDefault();
+            });
 
             app.UseHttpsRedirection();
             app.UseRouting();
