@@ -35,7 +35,7 @@ namespace Tasker.Core.Aggregates.TaskAggregate
             }
         }
 
-        public WorkerOrderingScheme WorkerOrderingScheme { get; private set; }
+        //public WorkerOrderingScheme WorkerOrderingScheme { get; private set; }
 
         private List<TaskHistoryItem> _history;
 
@@ -70,7 +70,7 @@ namespace Tasker.Core.Aggregates.TaskAggregate
                 throw new InvalidOperationException();
 
             _currentWorker = currentWorker;
-            WorkerOrderingScheme = workerOrderingScheme;
+            //WorkerOrderingScheme = workerOrderingScheme;
             if (history == null)
                 _history = new List<TaskHistoryItem>();
 

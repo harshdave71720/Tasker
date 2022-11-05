@@ -24,7 +24,7 @@ namespace Tasker.Core.Aggregates.TaskAggregate
             }
         }
 
-        public WorkerPool(List<TaskWorker> workers, IWorkerOrdererFactory ordererFactory, WorkerOrderingScheme orderingScheme)
+        public WorkerPool(HashSet<TaskWorker> workers, IWorkerOrdererFactory ordererFactory, WorkerOrderingScheme orderingScheme)
         {
             Guard.AgainstNull(workers);
             Guard.AgainstNull(ordererFactory);
