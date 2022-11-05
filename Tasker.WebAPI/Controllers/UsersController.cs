@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Tasker.Application.Repositories;
 using Tasker.Core.Aggregates.UserAggregate;
 using Tasker.WebAPI.Models;
+using Newtonsoft.Json;
 
 namespace Tasker.WebAPI.Controllers
 {
@@ -33,7 +34,9 @@ namespace Tasker.WebAPI.Controllers
         [Route("")]
         public async Task<IActionResult> GetAll()
         {
-            return Ok(new Response<IEnumerable<User>>(await _userRepository.GetAll()));
+            var users = await _userRepository.GetAll();
+            System.Console.WriteLine(JsonConvert.SerializeObject(users));
+            return Ok(new Response<IEnumerable<User>>(users));
         }
 
         [HttpDelete]

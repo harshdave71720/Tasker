@@ -24,7 +24,7 @@ namespace Tasker.WebAPI
 
         public IConfiguration Configuration { get; }
 
-        private readonly string _myAllowSpecificOrigins = "MyAllowedSpecificOrigins";
+        private readonly string _myAllowSpecificOrigins = "AllowedCorsOrigins";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -59,6 +59,7 @@ namespace Tasker.WebAPI
 
             app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseCors(_myAllowSpecificOrigins);
             app.UseAuthentication();
             
             app.UseAuthorization();

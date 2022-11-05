@@ -56,7 +56,7 @@ namespace Tasker.WebAPI.Controllers
 
             var passwordValid = await _userIdentityService.ValidatePassword(loginModel.Email, loginModel.Password);
             if(!passwordValid)
-                return BadRequest();
+                return Unauthorized();
 
             //return Ok(_bearerTokenService.GetBearerToken(exisitingUser));
             return Ok(new Response<AuthenticatedUserModel>
