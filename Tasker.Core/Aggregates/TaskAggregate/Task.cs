@@ -13,6 +13,8 @@ namespace Tasker.Core.Aggregates.TaskAggregate
     {
         public string Name { get; private set; }
 
+        public DateTime CreatedOn { get; private set; }
+
         public IReadOnlyList<TaskWorker> PossibleWorkers 
         {
             get { return _workerPool.Workers; }
@@ -48,11 +50,12 @@ namespace Tasker.Core.Aggregates.TaskAggregate
         public Task
             (
                 int id, 
-                string name, 
+                string name,
                 WorkerPool workerPool, 
                 TaskWorker currentWorker = null, 
                 WorkerOrderingScheme workerOrderingScheme = WorkerOrderingScheme.AscendingNameScheme,
-                List<TaskHistoryItem> history = null
+                List<TaskHistoryItem> history = null,
+                DateTime? createdOn = null
             ) 
             : base(id)
         {
@@ -70,6 +73,8 @@ namespace Tasker.Core.Aggregates.TaskAggregate
             WorkerOrderingScheme = workerOrderingScheme;
             if (history == null)
                 _history = new List<TaskHistoryItem>();
+
+            CreatedOn = createdOn ?? DateTime.Now.Date;
         }
 
         public Task
@@ -78,9 +83,10 @@ namespace Tasker.Core.Aggregates.TaskAggregate
             WorkerPool workerPool,
             TaskWorker currentWorker = null,
             WorkerOrderingScheme workerOrderingScheme = WorkerOrderingScheme.AscendingNameScheme,
-            List<TaskHistoryItem> history = null
+            List<TaskHistoryItem> history = null,
+            DateTime? createdOn = null
             )
-            : this(default(int), name, workerPool, currentWorker, workerOrderingScheme, history)
+            : this(default(int), name, workerPool, currentWorker, workerOrderingScheme, history, createdOn)
         {
         }
 
