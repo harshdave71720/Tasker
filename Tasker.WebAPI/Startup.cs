@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Tasker.Identity.Infrastructure;
 using Tasker.Infrastructure;
+using Newtonsoft.Json;
 
 namespace Tasker.WebAPI
 {
@@ -40,7 +41,7 @@ namespace Tasker.WebAPI
                                 );
             });
 
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
             services.AddSwaggerGen();
             services.ConfigureIdentityServices(Configuration);
             services.ConfigureInfrastructureServices(Configuration);
