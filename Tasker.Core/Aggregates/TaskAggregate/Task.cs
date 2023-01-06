@@ -35,7 +35,7 @@ namespace Tasker.Core.Aggregates.TaskAggregate
             }
         }
 
-        //public WorkerOrderingScheme WorkerOrderingScheme { get; private set; }
+        public WorkerOrderingScheme WorkerOrderingScheme { get { return _workerPool.OrderingScheme; } }
 
         private List<TaskHistoryItem> _history;
 

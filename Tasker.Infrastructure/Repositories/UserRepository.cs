@@ -90,6 +90,25 @@ namespace Tasker.Infrastructure.Repositories
             }
         }
 
+        public async Task<IEnumerable<User>> GetAll(List<int> ids)
+        {
+            using (var connection = GetDbConnection)
+            {
+                var sql = @"SELECT Id, FirstName, LastName, Email, Worker_Status as WorkerStatus 
+                            FROM USER WHERE Id in @ids";
+
+                var user = await connection.QueryAsync(sql, new { ids });
+                return user.Select(u => new User
+                    (
+                        Convert.ChangeType(u.Id, typeof(int)),
+                        Convert.ChangeType(u.Email, typeof(string)),
+                        Convert.ChangeType(u.FirstName, typeof(string)),
+                        Convert.ChangeType(u.LastName, typeof(string)),
+                        (WorkerStatus)u.WorkerStatus
+                    )).ToList();
+            }
+        }
+
         public async Task<User> Save(User item)
         {
             if (item.Id == default(int))
