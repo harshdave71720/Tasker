@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Tasker.Identity.Infrastructure;
 using Tasker.Infrastructure;
 using Newtonsoft.Json;
+using Tasker.Application;
 
 namespace Tasker.WebAPI
 {
@@ -45,6 +46,7 @@ namespace Tasker.WebAPI
             services.AddSwaggerGen();
             services.ConfigureIdentityServices(Configuration);
             services.ConfigureInfrastructureServices(Configuration);
+            services.ConfigureApplicationServices(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
