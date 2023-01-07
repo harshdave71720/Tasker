@@ -53,5 +53,13 @@ namespace Tasker.WebAPI.Controllers
             await _taskRepository.Save(task);
             return Ok(new Response<TaskAggregate.Task>(task));
         }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        { 
+            await _taskRepository.Delete(id);
+            return Ok();
+        }
     }
 }

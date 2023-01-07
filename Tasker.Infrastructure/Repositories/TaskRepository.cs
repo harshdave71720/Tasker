@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using Tasker.Core.Aggregates;
 using TaskAggregate = Tasker.Core.Aggregates.TaskAggregate;
-using Tasker.Core.Aggregates.TaskAggregate;
 using Tasker.Application.Repositories;
 using System.Transactions;
 using Dapper;
@@ -19,7 +17,25 @@ namespace Tasker.Infrastructure.Repositories
 
         public async Task<bool> Delete(int id)
         {
-            throw new NotImplementedException();
+            if (!await Exists(id))
+                return false;
+
+            using (var scope = new TransactionScope())
+            {
+                using (var connection = GetDbConnection)
+                {
+                    var sql = @"DELETE FROM TASK WHERE ID = @id";
+                    await connection.ExecuteAsync(sql, new { id = id });
+                    sql = @"DELETE FROM TASK_WORKER WHERE TASKID = @id";
+                    await connection.ExecuteAsync(sql, new { id = id });
+                    sql = @"DELETE FROM TASK_HISTORY WHERE TASKID = @id";
+                    await connection.ExecuteAsync(sql, new { id = id });
+                }
+
+                scope.Complete();
+            }
+
+            return true;
         }
 
         public async Task<TaskAggregate.Task> Get(int id)
@@ -78,6 +94,16 @@ namespace Tasker.Infrastructure.Repositories
             }
 
             return item;
+        }
+
+        public async Task<bool> Exists(int id)
+        {
+            using (var connection = GetDbConnection)
+            {
+                var sql = @"SELECT 1 FROM TASK WHERE ID = @id";
+                var found = await connection.ExecuteScalarAsync<int>(sql, new { id = id });
+                return found == 1;
+            }
         }
     }
 }
