@@ -9,12 +9,19 @@ using Tasker.Infrastructure.Settings;
 using Dapper;
 using Tasker.Core.Constants;
 using System.Linq;
+using Tasker.Core.Helpers;
 
 namespace Tasker.Infrastructure.Repositories
 {
     internal class UserRepository : DapperRepository, IUserRepository
     {
-        public UserRepository(IOptions<DataStoreSettings> settingOptions) : base(settingOptions) { }
+        private readonly CoreObjectConvertor _coreObjectConvertor;
+
+        public UserRepository(IOptions<DataStoreSettings> settingOptions, CoreObjectConvertor coreObjectConvertor) : base(settingOptions) 
+        {
+            Guard.AgainstNull(coreObjectConvertor);
+            _coreObjectConvertor = coreObjectConvertor;
+        }
 
         public async Task<bool> Delete(int id)
         {
@@ -31,20 +38,13 @@ namespace Tasker.Infrastructure.Repositories
         {
             using (var connection = GetDbConnection)
             {
-                var sql = @"SELECT Id, FirstName, LastName, Email, Worker_Status as WorkerStatus 
+                var sql = @"SELECT Id, FirstName, LastName, Email, WorkerStatus
                             FROM USER 
                             WHERE ID = @id AND Status = @status;";
 
                 var user = await connection.QuerySingleOrDefaultAsync(sql, new { id, status = UserStatus.Active });
                 return user != null
-                    ? new User
-                    (
-                        Convert.ChangeType(user.Id, typeof(int)),
-                        Convert.ChangeType(user.Email, typeof(string)),
-                        Convert.ChangeType(user.FirstName, typeof(string)),
-                        Convert.ChangeType(user.LastName, typeof(string)),
-                        (WorkerStatus)user.WorkerStatus
-                    )
+                    ? _coreObjectConvertor.ToUser(user)
                     : null;
             }
         }
@@ -53,7 +53,7 @@ namespace Tasker.Infrastructure.Repositories
         {
             using (var connection = GetDbConnection)
             {
-                var sql = @"SELECT Id, FirstName, LastName, Email, Worker_Status as WorkerStatus 
+                var sql = @"SELECT Id, FirstName, LastName, Email, WorkerStatus 
                             FROM USER 
                             WHERE Email = @email AND Status = @status;";
 
@@ -75,7 +75,7 @@ namespace Tasker.Infrastructure.Repositories
         {
             using (var connection = GetDbConnection)
             {
-                var sql = @"SELECT Id, FirstName, LastName, Email, Worker_Status as WorkerStatus 
+                var sql = @"SELECT Id, FirstName, LastName, Email, WorkerStatus 
                             FROM USER WHERE STATUS = @status;";
 
                 var user = await connection.QueryAsync(sql, new { status = UserStatus.Active });
@@ -94,7 +94,7 @@ namespace Tasker.Infrastructure.Repositories
         {
             using (var connection = GetDbConnection)
             {
-                var sql = @"SELECT Id, FirstName, LastName, Email, Worker_Status as WorkerStatus 
+                var sql = @"SELECT Id, FirstName, LastName, Email, WorkerStatus 
                             FROM USER WHERE Id in @ids";
 
                 var user = await connection.QueryAsync(sql, new { ids });
@@ -122,7 +122,7 @@ namespace Tasker.Infrastructure.Repositories
             using (var connection = GetDbConnection)
             {
                 var sql = @"INSERT INTO USER(
-	                            FIRSTNAME,LASTNAME,EMAIL,STATUS,WORKER_STATUS
+	                            FIRSTNAME,LASTNAME,EMAIL,STATUS,WORKERSTATUS
                             )
                             VALUES(
 		                            @FirstName, @LastName, @EmailAddress, @Status, @WorkerStatus
@@ -142,7 +142,7 @@ namespace Tasker.Infrastructure.Repositories
                             SET
                                 FIRSTNAME = @FirstName,
 	                            LASTNAME = @LastName,
-                                WORKER_STATUS= @WorkerStatus
+                                WORKERSTATUS= @WorkerStatus
                             WHERE ID = @Id;";
 
                 await connection.ExecuteAsync(sql, item);

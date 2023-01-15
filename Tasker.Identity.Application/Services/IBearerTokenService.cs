@@ -7,6 +7,6 @@ namespace Tasker.Identity.Application.Services
 {
     public interface IBearerTokenService
     {
-        public string GetBearerToken(IIdentityUser user);
+        public string GetBearerToken<AppUserIdType>(IIdentityUser user, AppUserIdType appUserId);
     }
 }

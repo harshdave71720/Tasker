@@ -15,7 +15,7 @@ namespace Tasker.WebAPI.Controllers
     [Route("[controller]")]
     [ApiController]
     [Authorize]
-    public class TaskController : ControllerBase
+    public class TaskController : TaskerControllerBase
     {
         private readonly ITaskRepository _taskRepository;
         private readonly IUserRepository _userRepository;
@@ -60,6 +60,25 @@ namespace Tasker.WebAPI.Controllers
         { 
             await _taskRepository.Delete(id);
             return Ok();
+        }
+
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<IActionResult> Get(int id)
+        {
+            var user = HttpContext.User;
+            var task = await _taskRepository.Get(id);
+            if(task == null)
+                return NotFound();
+            return Ok(task);
+        }
+
+        [HttpGet]
+        [Route("")]
+        public async Task<IActionResult> Get()
+        {
+            var tasks = await _taskRepository.GetAll();   
+            return Ok(tasks);
         }
     }
 }

@@ -73,6 +73,8 @@ namespace Tasker.Core.Aggregates.TaskAggregate
             //WorkerOrderingScheme = workerOrderingScheme;
             if (history == null)
                 _history = new List<TaskHistoryItem>();
+            else
+                _history = history;
 
             CreatedOn = createdOn ?? DateTime.Now.Date;
         }
