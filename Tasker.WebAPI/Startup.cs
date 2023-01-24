@@ -35,7 +35,9 @@ namespace Tasker.WebAPI
                 options.AddPolicy(name: _myAllowSpecificOrigins,
                                     builder =>
                                     {
-                                        builder.WithOrigins(Configuration.GetSection("AllowedCorsOrigins").Get<string[]>());
+                                        builder
+                                        .AllowAnyOrigin();
+                                        // .WithOrigins(Configuration.GetSection("AllowedCorsOrigins").Get<string[]>());
                                         builder.AllowAnyMethod();
                                         builder.AllowAnyHeader();
                                     }
@@ -62,6 +64,8 @@ namespace Tasker.WebAPI
             {
                 options.EnableTryItOutByDefault();
             });
+            
+            app.UseCors(_myAllowSpecificOrigins);
 
             app.UseHttpsRedirection();
             app.UseRouting();
