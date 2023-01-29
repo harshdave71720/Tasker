@@ -20,13 +20,14 @@ namespace Tasker.Identity.Infrastructure.Services
             _jwtConfiguration = configurationOptions.Value;
         }
 
-        public string GetBearerToken(IIdentityUser user)
+        public string GetBearerToken<AppUserIdType>(IIdentityUser user, AppUserIdType appUserId)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(@_jwtConfiguration.Key));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var claims = new Claim[] 
             {
-                new Claim(ClaimTypes.Email, user.Email)
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim("AppUserId", appUserId.ToString())
             };
 
             var token = new JwtSecurityToken

@@ -49,9 +49,9 @@ namespace Tasker.WebAPI.Controllers
         [Route("Login")]
         public async Task<IActionResult> Login(UserLoginModel loginModel)
         {
-            var exisitingUser = _userIdentityService.GetIdentityUser(loginModel.Email);
+            var identityUser = _userIdentityService.GetIdentityUser(loginModel.Email);
             var appUser = await _userRepository.Get(loginModel.Email);
-            if (exisitingUser == null || appUser == null)
+            if (identityUser == null || appUser == null)
                 return BadRequest();
 
             var passwordValid = await _userIdentityService.ValidatePassword(loginModel.Email, loginModel.Password);
@@ -66,7 +66,7 @@ namespace Tasker.WebAPI.Controllers
                         Email = appUser.EmailAddress, 
                         FirstName = appUser.FirstName,
                         LastName = appUser.LastName,
-                        Token = _bearerTokenService.GetBearerToken(exisitingUser)
+                        Token = _bearerTokenService.GetBearerToken(identityUser, appUser.Id)
                     }
                 ));
         }

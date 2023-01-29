@@ -13,7 +13,7 @@ namespace Tasker.Core.Aggregates.TaskAggregate
     {
         private Dictionary<int, TaskWorker> _workers;
         private IWorkerOrdererFactory _ordererFactory;
-        private WorkerOrderingScheme _orderingScheme;
+        public WorkerOrderingScheme OrderingScheme { get; private set; }
 
         private int _poolSize => _workers.Count;
         public IReadOnlyList<TaskWorker> Workers 
@@ -24,13 +24,13 @@ namespace Tasker.Core.Aggregates.TaskAggregate
             }
         }
 
-        public WorkerPool(List<TaskWorker> workers, IWorkerOrdererFactory ordererFactory, WorkerOrderingScheme orderingScheme)
+        public WorkerPool(HashSet<TaskWorker> workers, IWorkerOrdererFactory ordererFactory, WorkerOrderingScheme orderingScheme = WorkerOrderingScheme.AscendingNameScheme)
         {
             Guard.AgainstNull(workers);
             Guard.AgainstNull(ordererFactory);
 
             _ordererFactory = ordererFactory;
-            _orderingScheme = orderingScheme;
+            OrderingScheme = orderingScheme;
             OrderWorkers(workers);
         }
 
@@ -52,7 +52,7 @@ namespace Tasker.Core.Aggregates.TaskAggregate
 
         private void OrderWorkers(IEnumerable<TaskWorker> workers)
         {
-            _ordererFactory.CreateOrderer(_orderingScheme).OrderWorkers(workers);
+            _ordererFactory.CreateOrderer(OrderingScheme).OrderWorkers(workers);
             _workers = workers.ToDictionary(w => w.Order);
         }
 
@@ -60,7 +60,7 @@ namespace Tasker.Core.Aggregates.TaskAggregate
         {
             Guard.AgainstNull(taskWorker);
 
-            var workers = _workers.Values.ToList();
+            var workers = _workers.Values.ToHashSet();
             if (workers.Contains(taskWorker))
                 return;
 

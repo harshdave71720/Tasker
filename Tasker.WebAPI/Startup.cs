@@ -12,6 +12,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Tasker.Identity.Infrastructure;
 using Tasker.Infrastructure;
+using Newtonsoft.Json;
+using Tasker.Application;
 
 namespace Tasker.WebAPI
 {
@@ -33,17 +35,20 @@ namespace Tasker.WebAPI
                 options.AddPolicy(name: _myAllowSpecificOrigins,
                                     builder =>
                                     {
-                                        builder.WithOrigins(Configuration.GetSection("AllowedCorsOrigins").Get<string[]>());
+                                        builder
+                                        .AllowAnyOrigin();
+                                        // .WithOrigins(Configuration.GetSection("AllowedCorsOrigins").Get<string[]>());
                                         builder.AllowAnyMethod();
                                         builder.AllowAnyHeader();
                                     }
                                 );
             });
 
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
             services.AddSwaggerGen();
             services.ConfigureIdentityServices(Configuration);
             services.ConfigureInfrastructureServices(Configuration);
+            services.ConfigureApplicationServices(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,7 +60,12 @@ namespace Tasker.WebAPI
             }
 
             app.UseSwagger();
-            app.UseSwaggerUI();
+            app.UseSwaggerUI(options =>
+            {
+                options.EnableTryItOutByDefault();
+            });
+            
+            app.UseCors(_myAllowSpecificOrigins);
 
             app.UseHttpsRedirection();
             app.UseRouting();
