@@ -7,6 +7,7 @@ using Moq;
 using Tasker.Core.TaskWorkerOrdering;
 using Tasker.Core.Constants;
 using Tasker.Core.TaskWorkerOrdering.Factories;
+using System.Linq;
 
 namespace Tasker.Tests.Core.TaskAggregate
 {
@@ -24,13 +25,13 @@ namespace Tasker.Tests.Core.TaskAggregate
         [Test]
         public void Constructor_ShouldThrowExceptionIfOrdererFactoryIsNull()
         {
-            Assert.Throws<ArgumentNullException>(() => new WorkerPool(new List<TaskWorker>() { SampleTaskWorker }, null, WorkerOrderingScheme.None));
+            Assert.Throws<ArgumentNullException>(() => new WorkerPool(new HashSet<TaskWorker>() { SampleTaskWorker }, null, WorkerOrderingScheme.None));
         }
 
         [Test]
         public void Constructor_ShouldOrderWorkersViaOrderer()
         {
-            var workers = new List<TaskWorker>() { SampleTaskWorker };
+            var workers = new HashSet<TaskWorker>() { SampleTaskWorker };
             var orderer = new Mock<WorkerOrderer>();
             var ordererFactory = new Mock<IWorkerOrdererFactory>();
             var ob = ordererFactory.Object;
@@ -44,7 +45,7 @@ namespace Tasker.Tests.Core.TaskAggregate
         [Test]
         public void GetNextWorker_ShouldThrowExceptionWhenCurrentIsNull()
         {
-            var workers = new List<TaskWorker>() { SampleTaskWorker };
+            var workers = new HashSet<TaskWorker>() { SampleTaskWorker };
             var orderer = new Mock<WorkerOrderer>();
             var ordererFactory = new Mock<IWorkerOrdererFactory>();
             ordererFactory.Setup(f => f.CreateOrderer(It.IsAny<WorkerOrderingScheme>())).Returns(orderer.Object);
@@ -88,7 +89,7 @@ namespace Tasker.Tests.Core.TaskAggregate
 
             var ordererFactory = new Mock<IWorkerOrdererFactory>();
             ordererFactory.Setup(f => f.CreateOrderer(It.IsAny<WorkerOrderingScheme>())).Returns(orderer.Object);
-            var sut = new WorkerPool(workers, ordererFactory.Object, WorkerOrderingScheme.AscendingNameScheme);
+            var sut = new WorkerPool(workers.ToHashSet(), ordererFactory.Object, WorkerOrderingScheme.AscendingNameScheme);
 
             // Act and Assert
             Assert.AreEqual(workers[nextActiveWorkerId - 1], sut.GetNextWorker(new TaskWorker(currentWorkerId, "dfs", "fds", WorkerStatus.Available)));
@@ -115,7 +116,7 @@ namespace Tasker.Tests.Core.TaskAggregate
 
             var ordererFactory = new Mock<IWorkerOrdererFactory>();
             ordererFactory.Setup(f => f.CreateOrderer(It.IsAny<WorkerOrderingScheme>())).Returns(orderer.Object);
-            var sut = new WorkerPool(workers, ordererFactory.Object, WorkerOrderingScheme.AscendingNameScheme);
+            var sut = new WorkerPool(workers.ToHashSet(), ordererFactory.Object, WorkerOrderingScheme.AscendingNameScheme);
 
             // Act and Assert
             Assert.IsNull(sut.GetNextWorker(workers[0]));
@@ -124,7 +125,7 @@ namespace Tasker.Tests.Core.TaskAggregate
         [Test]
         public void AddWorker_ShuldThrowExceptionIfWorkerIsNull()
         {
-            var workers = new List<TaskWorker>() { SampleTaskWorker };
+            var workers = new HashSet<TaskWorker>() { SampleTaskWorker };
             var orderer = new Mock<WorkerOrderer>();
             var ordererFactory = new Mock<IWorkerOrdererFactory>();
             ordererFactory.Setup(f => f.CreateOrderer(It.IsAny<WorkerOrderingScheme>())).Returns(orderer.Object);
@@ -136,7 +137,7 @@ namespace Tasker.Tests.Core.TaskAggregate
         [Test]
         public void AddWorker_ShouldAddWorkerIfNotExists_AndReorderWorkers()
         {
-            var workers = new List<TaskWorker>() { SampleTaskWorker };
+            var workers = new HashSet<TaskWorker>() { SampleTaskWorker };
             var orderer = new Mock<WorkerOrderer>();
             SetupSerialOrdering(orderer);
             var ordererFactory = new Mock<IWorkerOrdererFactory>();
@@ -152,7 +153,7 @@ namespace Tasker.Tests.Core.TaskAggregate
         [Test]
         public void AddWorker_ShouldNotAddWorkerIfAlreadyExists()
         {
-            var workers = new List<TaskWorker>() { SampleTaskWorker };
+            var workers = new HashSet<TaskWorker>() { SampleTaskWorker };
             var orderer = new Mock<WorkerOrderer>();
             SetupSerialOrdering(orderer);
             var ordererFactory = new Mock<IWorkerOrdererFactory>();
@@ -168,7 +169,7 @@ namespace Tasker.Tests.Core.TaskAggregate
         [Test]
         public void RemoveWorker_ShouldRemoveWorkerIfExists_AndReorderWorkers()
         {
-            var workers = new List<TaskWorker>() { SampleTaskWorker };
+            var workers = new HashSet<TaskWorker>() { SampleTaskWorker };
             var orderer = new Mock<WorkerOrderer>();
             SetupSerialOrdering(orderer);
             var ordererFactory = new Mock<IWorkerOrdererFactory>();
@@ -184,7 +185,7 @@ namespace Tasker.Tests.Core.TaskAggregate
         [Test]
         public void RemoveWorker_ShouldNotRemoveWorkerIfNotExists()
         {
-            var workers = new List<TaskWorker>() { SampleTaskWorker };
+            var workers = new HashSet<TaskWorker>() { SampleTaskWorker };
             var orderer = new Mock<WorkerOrderer>();
             SetupSerialOrdering(orderer);
             var ordererFactory = new Mock<IWorkerOrdererFactory>();
@@ -200,7 +201,7 @@ namespace Tasker.Tests.Core.TaskAggregate
         [Test]
         public void Contains_ShouldThrowExceptionIfWorkerIsNull()
         {
-            var workers = new List<TaskWorker>() { SampleTaskWorker };
+            var workers = new HashSet<TaskWorker>() { SampleTaskWorker };
             var orderer = new Mock<WorkerOrderer>();
             SetupSerialOrdering(orderer);
             var ordererFactory = new Mock<IWorkerOrdererFactory>();
@@ -213,7 +214,7 @@ namespace Tasker.Tests.Core.TaskAggregate
         [Test]
         public void Contains_ShouldReturnTrueIfWorkerExists()
         {
-            var workers = new List<TaskWorker>() { SampleTaskWorker };
+            var workers = new HashSet<TaskWorker>() { SampleTaskWorker };
             var orderer = new Mock<WorkerOrderer>();
             SetupSerialOrdering(orderer);
             var ordererFactory = new Mock<IWorkerOrdererFactory>();
@@ -226,7 +227,7 @@ namespace Tasker.Tests.Core.TaskAggregate
         [Test]
         public void Contains_ShouldReturnFalseIfWorkerNotExists()
         {
-            var workers = new List<TaskWorker>() { SampleTaskWorker };
+            var workers = new HashSet<TaskWorker>() { SampleTaskWorker };
             var orderer = new Mock<WorkerOrderer>();
             SetupSerialOrdering(orderer);
             var ordererFactory = new Mock<IWorkerOrdererFactory>();

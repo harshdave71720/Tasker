@@ -118,7 +118,7 @@ namespace Tasker.Infrastructure.Repositories
 
         private async Task<TaskAggregate.Task> Update(TaskAggregate.Task item)
         {
-            return null;
+            throw new NotImplementedException();
         }
 
         private async Task<TaskAggregate.Task> Insert(TaskAggregate.Task item)

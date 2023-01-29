@@ -10,7 +10,7 @@ namespace Tasker.Core.TaskWorkerOrdering.Factories
             switch (orderingScheme)
             {
                 case WorkerOrderingScheme.None:
-                    throw new InvalidOperationException();
+                    return new AscendingNameWorkerOrderer();
                 case WorkerOrderingScheme.AscendingNameScheme:
                     return new AscendingNameWorkerOrderer();
                 default:

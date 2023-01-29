@@ -12,6 +12,8 @@ namespace Tasker.Infrastructure
         {
             services.Configure<DataStoreSettings>(configuration.GetSection(DataStoreSettings.SectionName));
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ITaskRepository, TaskRepository>();
+            services.AddScoped<CoreObjectConvertor>();
         }
     }
 }

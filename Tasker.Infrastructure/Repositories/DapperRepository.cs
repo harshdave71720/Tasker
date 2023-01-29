@@ -7,7 +7,7 @@ using MySql.Data.MySqlClient;
 
 namespace Tasker.Infrastructure.Repositories
 {
-    abstract internal class DapperRepository
+    public abstract class DapperRepository
     {
         private readonly DataStoreSettings _settings;
 

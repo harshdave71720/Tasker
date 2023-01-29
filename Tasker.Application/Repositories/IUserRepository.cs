@@ -9,5 +9,7 @@ namespace Tasker.Application.Repositories
     public interface IUserRepository : IRepository<User, int>
     {
         Task<User> Get(string email);
+
+        Task<IEnumerable<User>> GetAll(List<int> ids);
     }
 }

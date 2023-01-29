@@ -13,6 +13,8 @@ namespace Tasker.Core.Aggregates.TaskAggregate
     {
         public string Name { get; private set; }
 
+        public DateTime CreatedOn { get; private set; }
+
         public IReadOnlyList<TaskWorker> PossibleWorkers 
         {
             get { return _workerPool.Workers; }
@@ -33,7 +35,7 @@ namespace Tasker.Core.Aggregates.TaskAggregate
             }
         }
 
-        public WorkerOrderingScheme WorkerOrderingScheme { get; private set; }
+        public WorkerOrderingScheme WorkerOrderingScheme { get { return _workerPool.OrderingScheme; } }
 
         private List<TaskHistoryItem> _history;
 
@@ -46,15 +48,16 @@ namespace Tasker.Core.Aggregates.TaskAggregate
         }
 
         public Task
-            (
-                int id, 
-                string name, 
-                WorkerPool workerPool, 
-                TaskWorker currentWorker = null, 
-                WorkerOrderingScheme workerOrderingScheme = WorkerOrderingScheme.AscendingNameScheme,
-                List<TaskHistoryItem> history = null
-            ) 
-            : base(id)
+        (
+            int id, 
+            string name,
+            WorkerPool workerPool, 
+            TaskWorker currentWorker = null, 
+            WorkerOrderingScheme workerOrderingScheme = WorkerOrderingScheme.AscendingNameScheme,
+            List<TaskHistoryItem> history = null,
+            DateTime? createdOn = null
+        ) 
+        : base(id)
         {
             Guard.AgainstEmptyOrWhiteSpace(name);
             Name = name;
@@ -67,22 +70,25 @@ namespace Tasker.Core.Aggregates.TaskAggregate
                 throw new InvalidOperationException();
 
             _currentWorker = currentWorker;
-            WorkerOrderingScheme = workerOrderingScheme;
+            //WorkerOrderingScheme = workerOrderingScheme;
             if (history == null)
                 _history = new List<TaskHistoryItem>();
+            else
+                _history = history;
+
+            CreatedOn = createdOn ?? DateTime.Now.Date;
         }
 
         public Task
-            (
-            string name,
-            WorkerPool workerPool,
-            TaskWorker currentWorker = null,
-            WorkerOrderingScheme workerOrderingScheme = WorkerOrderingScheme.AscendingNameScheme,
-            List<TaskHistoryItem> history = null
-            )
-            : this(default(int), name, workerPool, currentWorker, workerOrderingScheme, history)
-        {
-        }
+        (
+        string name,
+        WorkerPool workerPool,
+        TaskWorker currentWorker = null,
+        WorkerOrderingScheme workerOrderingScheme = WorkerOrderingScheme.AscendingNameScheme,
+        List<TaskHistoryItem> history = null,
+        DateTime? createdOn = null
+        )
+        : this(default(int), name, workerPool, currentWorker, workerOrderingScheme, history, createdOn){}
 
         protected override void IdentityGuards(int id)
         {

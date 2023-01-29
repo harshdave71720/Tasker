@@ -252,7 +252,7 @@ namespace Tasker.Tests.Core.TaskAggregate
             SetupSerialOrdering(orderer);
             var ordererFactory = new Mock<IWorkerOrdererFactory>();
             ordererFactory.Setup(f => f.CreateOrderer(It.IsAny<WorkerOrderingScheme>())).Returns(orderer.Object);
-            return new WorkerPool(workers.ToList(), ordererFactory.Object, WorkerOrderingScheme.AscendingNameScheme);
+            return new WorkerPool(workers.ToHashSet(), ordererFactory.Object, WorkerOrderingScheme.AscendingNameScheme);
         }
 
         private void SetupSerialOrdering(Mock<WorkerOrderer> orderer)
