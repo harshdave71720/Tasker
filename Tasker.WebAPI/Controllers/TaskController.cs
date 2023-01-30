@@ -87,5 +87,29 @@ namespace Tasker.WebAPI.Controllers
         {
             return null;
         }
+
+        [HttpPost]
+        [Route("{id}/Done")]
+        public async Task<IActionResult> Done(int id)
+        {
+            if (!(await _taskRepository.Exists(id)))
+                return NotFound();
+            var task = await _taskRepository.Get(id);
+            task.MarkDone();
+            await _taskRepository.Save(task);
+            return Ok(task);
+        }
+
+        [HttpPost]
+        [Route("{id}/Skip")]
+        public async Task<IActionResult> Skip(int id)
+        {
+            if (!(await _taskRepository.Exists(id)))
+                return NotFound();
+            var task = await _taskRepository.Get(id);
+            task.Skip();
+            await _taskRepository.Save(task);
+            return Ok(task);
+        }
     }
 }
