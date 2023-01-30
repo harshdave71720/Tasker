@@ -118,7 +118,49 @@ namespace Tasker.Infrastructure.Repositories
 
         private async Task<TaskAggregate.Task> Update(TaskAggregate.Task item)
         {
-            throw new NotImplementedException();
+            using (TransactionScope scope = new TransactionScope())
+            {
+                using (var connection = GetDbConnection)
+                {
+                    var sql = @"UPDATE TASK SET
+                                NAME = @name,
+                                CURRENTWORKERID = @currentWorkerId,
+                                WORKERORDERINGSCHEME = @workerOrderingScheme
+                                WHERE ID = @id
+                    ";
+
+                    await connection.ExecuteAsync(sql, new 
+                    { 
+                        id = item.Id,
+                        name = item.Name,
+                        currentWorkerId = item.CurrentWorker.Id,
+                        workerOrderingScheme = item.WorkerOrderingScheme
+                    });
+
+                    IEnumerable<TaskHistoryItem> historyItemsToInsert = null;
+                    sql = @"SELECT MAX(CREATEDON) FROM TASKHISTORY WHERE TASKID = @taskId";
+                    var lastTimeStamp = await connection.ExecuteScalarAsync<DateTime?>(sql, new { taskID = item.Id });
+                    historyItemsToInsert = lastTimeStamp == null ? item.History : item.History.Where(h => h.TimeStamp > lastTimeStamp);
+
+                    foreach (var historyItem in historyItemsToInsert)
+                    {
+                        sql = @"INSERT INTO TASKHISTORY(TASKID, CREATEDON, WORKERID, COMPLETIONSTATUS) 
+                                VALUES(@taskId, @createdOn, @workerId, @completionStatus)";
+
+                        await connection.ExecuteAsync(sql, new 
+                        { 
+                            taskId = item.Id,
+                            createdOn = DateTime.Now,
+                            workerID = historyItem.WorkerId,
+                            completionStatus = historyItem.Status
+                        });
+                    }
+
+                    scope.Complete();
+                }
+            }
+
+            return item;
         }
 
         private async Task<TaskAggregate.Task> Insert(TaskAggregate.Task item)
